@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Vinnar Institution of Fashion Design</title>
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="login-card">
+        <div class="logo-container">
+            <img src="logo.png" alt="Vinnar Logo">
+        </div>
+
+        <div class="login-form-content">
+            <div class="header-text">
+                <h1 style="font-size: 1.25rem; margin-bottom: 5px; color: var(--text-dark);">Vinnar Institution of
+                    Fashion
+                    Design</h1>
+                <p style="font-size: 0.85rem;">Authorized Personal & Student Login</p>
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-user-shield"></i>
+                <input type="text" id="username" placeholder="Login ID" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-key"></i>
+                <input type="password" id="password" placeholder="Passkey">
+            </div>
+
+            <button class="login-btn" onclick="login()" id="loginBtn">
+                <span>Secure Login</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+
+            <div id="status"></div>
+
+            <div class="footer-credit">
+                Developed by <a href="https://sswebtech.xyz" target="_blank">SSWebTech</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getFingerprint() {
+            return btoa(navigator.userAgent + screen.width + screen.height + navigator.language);
+        }
+
+        async function login() {
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const btn = document.getElementById('loginBtn');
+            const statusDiv = document.getElementById('status');
+
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+            const fingerprint = getFingerprint();
+
+            if (!username || !password) {
+                showError('Please enter both Login ID and Passkey');
+                return;
+            }
+
+            // UI Loading State
+            const originalBtnContent = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+            btn.disabled = true;
+            statusDiv.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        deviceFingerprint: fingerprint
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('user', JSON.stringify(data));
+                    localStorage.setItem('fingerprint', fingerprint);
+
+                    btn.innerHTML = '<i class="fas fa-check"></i> Redirecting...';
+                    btn.style.background = '#22c55e';
+
+                    setTimeout(() => {
+                        if (data.role === 'admin') {
+                            window.location.href = 'admin_dashboard.html';
+                        } else {
+                            window.location.href = 'student_dashboard.html';
+                        }
+                    }, 800);
+                } else {
+                    showError(data.message || 'Invalid credentials');
+                    btn.innerHTML = originalBtnContent;
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                showError('Network error. Check your connection.');
+                btn.innerHTML = originalBtnContent;
+                btn.disabled = false;
+            }
+        }
+
+        function showError(msg) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerText = msg;
+            statusDiv.className = 'status-error';
+            statusDiv.style.display = 'block';
+        }
+
+        // Add Enter Key Support
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+
+</html>

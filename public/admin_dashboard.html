@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Vinnar Institution of Fashion Design</title>
+    <!-- Use Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside>
+        <div class="logo-section">
+            <span>Vinnar Portal</span>
+        </div>
+        <nav>
+            <ul>
+                <li id="menuDashboard" class="active" onclick="showPage('dashboard')"><i class="fas fa-chart-line"></i>
+                    Dashboard</li>
+                <li id="menuStudents" onclick="showPage('students')"><i class="fas fa-user-graduate"></i> Students</li>
+                <li id="menuReports" onclick="showPage('reports')"><i class="fas fa-file-export"></i> Reports</li>
+                <li id="menuSettings" onclick="showPage('settings')"><i class="fas fa-cog"></i> Settings</li>
+                <li onclick="logout()" style="margin-top: 10rem;"><i class="fas fa-sign-out-alt"></i> Logout</li>
+            </ul>
+        </nav>
+        <div style="padding: 1rem 1.5rem; font-size: 0.7rem; opacity: 0.6; color: white;">
+            Developed by <a href="https://sswebtech.xyz" target="_blank"
+                style="color: white; font-weight: 700;">SSWebTech</a>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main>
+        <header>
+            <h1 id="headerTitle"><i class="fas fa-tachometer-alt" style="color: var(--card-blue);"></i> Overview</h1>
+            <div class="flex-center">
+                <div class="user-avatar">A</div>
+            </div>
+        </header>
+
+        <div class="content-area">
+
+            <!-- Dashboard Section -->
+            <div id="sectionDashboard" class="page-section active">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Total Students</h4>
+                        <div class="value" id="statTotalStudents">0</div>
+                        <div class="icon-box"><i class="fas fa-users"></i></div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Checked In Today</h4>
+                        <div class="value" id="statCheckedIn">0</div>
+                        <div class="icon-box"><i class="fas fa-user-check"></i></div>
+                    </div>
+                    <div class="stat-card" style="background: #0891b2;">
+                        <h4>Checked Out</h4>
+                        <div class="value" id="statCheckedOut">0</div>
+                        <div class="icon-box"><i class="fas fa-sign-out-alt"></i></div>
+                    </div>
+                    <div class="stat-card" style="background: #f59e0b;">
+                        <h4>Pending</h4>
+                        <div class="value" id="statPending">0</div>
+                        <div class="icon-box"><i class="fas fa-clock"></i></div>
+                    </div>
+                </div>
+
+                <!-- Management Section -->
+                <div class="mgmt-panel">
+                    <div class="mgmt-card">
+                        <h3><i class="fas fa-user-plus"></i> Add New Student</h3>
+                        <form id="addStudentForm">
+                            <input type="text" id="fullName" placeholder="Full Student Name" required>
+                            <input type="text" id="username" placeholder="Username (Login ID)" required>
+                            <input type="password" id="password" placeholder="Passkey" required>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <input type="number" id="totalFees" placeholder="Total Fees (₹)">
+                                <input type="number" id="paidFees" placeholder="Paid Amount (₹)">
+                            </div>
+                            <input type="text" id="feeStatus" placeholder="Summary Status (e.g. 500 Due)">
+                            <input type="text" id="feeRemarks" placeholder="Fee Remarks (e.g. Next pay 10th)">
+                            <input type="text" id="recordStatus" placeholder="Record Status (e.g. Pending)">
+                            <input type="text" id="pendingDocs" placeholder="Missing Docs (e.g. Aadhar, Photo)">
+                            <select id="assignedShift" required>
+                                <option value="">Assign Shift</option>
+                                <option value="morning">Morning (9am-1pm)</option>
+                                <option value="afternoon">Afternoon (1pm-5pm)</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary"
+                                style="width: 100%; justify-content: center;">Register Member</button>
+                        </form>
+                    </div>
+
+                    <div class="mgmt-card flex-center flex-column">
+                        <h3><i class="fas fa-qrcode"></i> Office Access QR</h3>
+                        <canvas id="qrCanvas"></canvas>
+                        <div class="qr-code-box">
+                            Code: <b style="color: var(--card-blue);">VINNAR_OFFICE_2026</b>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity -->
+                <div class="data-card">
+                    <h3><i class="fas fa-history"></i> Today's Activity</h3>
+                    <div style="overflow-x: auto;">
+                        <table id="attendanceTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Time (In / Out)</th>
+                                    <th>Verification Photos</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Section -->
+            <div id="sectionStudents" class="page-section">
+                <!-- All Students -->
+                <div class="data-card">
+                    <h3><i class="fas fa-users" style="color: var(--card-blue);"></i> Registered Students</h3>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Login ID</th>
+                                    <th>Assigned Shift</th>
+                                    <th>Fee Status</th>
+                                    <th>Record Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allStudentsList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="sectionReports" class="page-section">
+                <div class="mgmt-card mb-15">
+                    <div class="flex gap-15" style="align-items: flex-end; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 150px;">
+                            <label class="form-group label">Start Date</label>
+                            <input type="date" id="reportStartDate" style="margin-bottom: 0;">
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label class="form-group label">End Date</label>
+                            <input type="date" id="reportEndDate" style="margin-bottom: 0;">
+                        </div>
+                        <button class="btn btn-primary" style="padding: 0.75rem 1.5rem;" onclick="loadReportPreview()">
+                            <i class="fas fa-sync-alt"></i> Generate Preview
+                        </button>
+                        <button id="downloadCSVBtn" class="btn btn-primary"
+                            style="padding: 0.75rem 1.5rem; background: #059669; display: none;"
+                            onclick="downloadExcel()">
+                            <i class="fas fa-file-excel"></i> Download Excel
+                        </button>
+                    </div>
+                </div>
+
+                <div class="data-card">
+                    <h3><i class="fas fa-table" style="color: var(--card-blue);"></i> Report Preview</h3>
+                    <div style="overflow-x: auto; max-height: 600px;">
+                        <table id="reportPreviewTable">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Name</th>
+                                    <th>Shift</th>
+                                    <th>Status</th>
+                                    <th>In Time</th>
+                                    <th>Out Time</th>
+                                    <th>Photos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="6"
+                                        style="text-align: center; padding: 3rem; color: var(--text-light);">Select a
+                                        month and click 'Generate Preview'</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="sectionSettings" class="page-section">
+                <div class="mgmt-card" style="max-width: 500px; margin: 0 auto;">
+                    <h3><i class="fas fa-key" style="color: var(--card-blue);"></i> Security Settings</h3>
+                    <p style="color: var(--text-light); font-size: 0.85rem; margin-bottom: 2rem;">Manage your
+                        administrative access and update your secure passkey.</p>
+
+                    <form id="changePasswordForm">
+                        <div class="form-group">
+                            <label class="text-bold text-small" style="display: block; margin-bottom: 8px;">Active
+                                Passkey</label>
+                            <input type="password" id="currentPassword" placeholder="Enter current password" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="text-bold text-small" style="display: block; margin-bottom: 8px;">New Secure
+                                Passkey</label>
+                            <input type="password" id="newPassword" placeholder="Minimum 6 characters" required
+                                minlength="6" autocomplete="new-password">
+                        </div>
+                        <div class="form-group">
+                            <label class="text-bold text-small" style="display: block; margin-bottom: 8px;">Verify New
+                                Passkey</label>
+                            <input type="password" id="confirmPassword" placeholder="Repeat new password" required
+                                minlength="6" autocomplete="new-password">
+                        </div>
+
+                        <div id="settingsStatus" class="text-small"
+                            style="margin-bottom: 1rem; display: none; padding: 10px; border-radius: 8px;"></div>
+
+                        <button type="submit" class="btn btn-primary w-full flex-center">
+                            <i class="fas fa-save" style="margin-right: 8px;"></i> Update Security Credentials
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Edit Student Modal -->
+    <div id="editModalOverlay" class="modal-overlay">
+        <div class="edit-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-edit" style="color: var(--card-blue);"></i> Edit Student Details</h2>
+                <button class="close-modal" onclick="closeEditModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="editStudentForm" style="padding: 0;">
+                <input type="hidden" id="editStudentId">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="editFullName" required>
+                </div>
+                <div class="edit-form-grid">
+                    <div class="form-group">
+                        <label>Total Fees (₹)</label>
+                        <input type="number" id="editTotalFees">
+                    </div>
+                    <div class="form-group">
+                        <label>Paid Fees (₹)</label>
+                        <input type="number" id="editPaidFees">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Fee Status Summary</label>
+                    <input type="text" id="editFeeStatus" placeholder="e.g. 500 Due">
+                </div>
+                <div class="form-group">
+                    <label>Fee Remarks (Private)</label>
+                    <input type="text" id="editFeeRemarks" placeholder="Internal notes...">
+                </div>
+                <div class="edit-form-grid">
+                    <div class="form-group">
+                        <label>Record Status</label>
+                        <input type="text" id="editRecordStatus" placeholder="e.g. Pending">
+                    </div>
+                    <div class="form-group">
+                        <label>Assigned Shift</label>
+                        <select id="editAssignedShift">
+                            <option value="morning">Morning</option>
+                            <option value="afternoon">Afternoon</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>New Password (Leave blank to keep current)</label>
+                    <input type="password" id="editPassword" placeholder="Enter new password">
+                </div>
+                <div class="form-group">
+                    <label>Missing Documents</label>
+                    <input type="text" id="editPendingDocs" placeholder="e.g. Aadhar, Passport Photo">
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; margin-top: 1rem;">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Photo Viewer Modal -->
+    <div id="viewPhotoModal" class="modal-overlay" onclick="closePhotoModal()">
+        <button class="photo-close-btn" onclick="closePhotoModal()"><i class="fas fa-times"></i></button>
+        <div class="edit-modal">
+            <img id="fullPhoto" src="" class="photo-full-view">
+        </div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || user.role !== 'admin') {
+            window.location.href = 'index.html';
+        }
+
+        function showPage(page) {
+            // Toggle sections
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`section${page.charAt(0).toUpperCase() + page.slice(1)}`).classList.add('active');
+
+            // Toggle Sidebar menu
+            document.querySelectorAll('nav li').forEach(li => li.classList.remove('active'));
+            document.getElementById(`menu${page.charAt(0).toUpperCase() + page.slice(1)}`).classList.add('active');
+
+            // Update Header
+            if (page === 'dashboard') {
+                document.getElementById('headerTitle').innerHTML = '<i class="fas fa-tachometer-alt" style="color: var(--card-blue);"></i> Overview';
+                loadDashboardData();
+            } else if (page === 'students') {
+                document.getElementById('headerTitle').innerHTML = '<i class="fas fa-user-graduate" style="color: var(--card-blue);"></i> Student Management';
+                loadStudentsList();
+            } else if (page === 'reports') {
+                document.getElementById('headerTitle').innerHTML = '<i class="fas fa-file-invoice" style="color: var(--card-blue);"></i> Attendance Reports';
+                // Set default dates (Today)
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('reportStartDate').value = today;
+                document.getElementById('reportEndDate').value = today;
+            } else if (page === 'settings') {
+                document.getElementById('headerTitle').innerHTML = '<i class="fas fa-user-lock" style="color: var(--card-blue);"></i> Account Settings';
+            }
+        }
+
+        async function loadStudentsList() {
+            try {
+                const res = await fetch('/api/all-students');
+                const students = await res.json();
+
+                const listBody = document.getElementById('allStudentsList');
+                listBody.innerHTML = '';
+
+                students.forEach(student => {
+                    listBody.innerHTML += `
+                        <tr>
+                            <td><div class="text-bold">${student.fullName}</div></td>
+                            <td><div class="text-mono text-muted" style="text-transform: uppercase;">${student.username}</div></td>
+                            <td><span class="badge badge-info">${student.assignedShift || 'morning'}</span></td>
+                            <td>
+                                <div class="text-bold ${student.feeStatus === 'No Dues' ? 'text-success' : 'text-danger'}">${student.feeStatus || 'No Dues'}</div>
+                                <div class="text-small text-muted">Total: ₹${student.totalFees || 0} | Paid: ₹${student.paidFees || 0}</div>
+                                ${student.feeRemarks ? `<div class="text-small text-muted" style="font-style: italic;">"${student.feeRemarks}"</div>` : ''}
+                            </td>
+                            <td>
+                                <div class="text-bold ${student.recordStatus === 'All Clear' ? 'text-success' : 'text-warning'}">${student.recordStatus || 'All Clear'}</div>
+                                ${student.pendingDocs ? `<div class="text-small text-danger">Missing: ${student.pendingDocs}</div>` : ''}
+                            </td>
+                            <td class="flex gap-10">
+                                <button class="btn btn-ghost btn-sm" style="color: var(--card-blue);" 
+                                    onclick='editStudentStatus("${student._id}", "${student.fullName.replace(/'/g, "\\'")}", ${JSON.stringify(student).replace(/'/g, "&apos;")})'>
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-ghost btn-sm" style="color: #ef4444;" onclick="deleteStudent('${student._id}', '${student.fullName.replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error('Error loading students', err);
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                const sRes = await fetch('/api/all-students');
+                const students = await sRes.json();
+                document.getElementById('statTotalStudents').innerText = students.length;
+
+                const aRes = await fetch('/api/attendance/today');
+                const data = await aRes.json();
+
+                const checkedIn = data.length;
+                const checkedOut = data.filter(r => r.checkOutTime).length;
+                const totalStudents = students.length;
+                const pending = totalStudents - checkedIn;
+
+                document.getElementById('statCheckedIn').innerText = checkedIn;
+                document.getElementById('statCheckedOut').innerText = checkedOut;
+                document.getElementById('statPending').innerText = pending >= 0 ? pending : 0;
+
+                const tbody = document.querySelector('#attendanceTable tbody');
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-light); padding: 3rem;">No attendance marked for today yet.</td></tr>';
+                } else {
+                    data.forEach(rec => {
+                        const row = document.createElement('tr');
+                        const formatTime = (t) => t ? new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--';
+
+                        row.innerHTML = `
+                            <td>
+                                <div class="text-bold" style="color: #1e293b;">${rec.studentId?.fullName || 'Member'}</div>
+                                <div class="text-small text-muted text-mono" style="margin-top: 2px;">${rec.studentId?.username || '-'}</div>
+                            </td>
+                            <td>
+                                <div class="flex gap-15" style="align-items: center;">
+                                    <div class="flex gap-10 text-success text-bold"><i class="fas fa-sign-in-alt"></i> ${formatTime(rec.checkInTime)}</div>
+                                    <div style="color: #e2e8f0; font-weight: 300;">|</div>
+                                    <div class="flex gap-10 ${rec.checkOutTime ? 'text-danger' : 'text-muted'} text-bold"><i class="fas fa-sign-out-alt"></i> ${formatTime(rec.checkOutTime)}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex gap-10">
+                                    ${rec.checkInPhoto ? `<div class="thumbnail-box"><img src="${rec.checkInPhoto}" class="thumbnail-img" onclick="openPhoto('${rec.checkInPhoto}')"><i class="fas fa-camera thumbnail-icon" style="color: var(--card-blue);"></i></div>` : ''}
+                                    ${rec.checkOutPhoto ? `<div class="thumbnail-box"><img src="${rec.checkOutPhoto}" class="thumbnail-img" onclick="openPhoto('${rec.checkOutPhoto}')"><i class="fas fa-camera thumbnail-icon" style="color: #dc2626;"></i></div>` : ''}
+                                </div>
+                            </td>
+                            <td><span class="badge-${rec.locationVerified ? 'verified' : 'failed'}"><i class="fas fa-location-dot"></i> ${rec.locationVerified ? 'Verified' : 'Invalid'}</span></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+            } catch (err) {
+                console.error('Error loading dashboard');
+            }
+        }
+
+        document.getElementById('addStudentForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
+
+            const payload = {
+                fullName: document.getElementById('fullName').value,
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                assignedShift: document.getElementById('assignedShift').value,
+                feeStatus: document.getElementById('feeStatus').value || 'No Dues',
+                recordStatus: document.getElementById('recordStatus').value || 'All Clear',
+                totalFees: Number(document.getElementById('totalFees').value) || 0,
+                paidFees: Number(document.getElementById('paidFees').value) || 0,
+                feeRemarks: document.getElementById('feeRemarks').value || '',
+                pendingDocs: document.getElementById('pendingDocs').value || ''
+            };
+
+            try {
+                const res = await fetch('/api/students', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    alert('Student registered successfully!');
+                    document.getElementById('addStudentForm').reset();
+                    loadDashboardData();
+                    loadStudentsList();
+                } else {
+                    const err = await res.json();
+                    alert('Error: ' + err.message);
+                }
+            } catch (err) {
+                alert('Connection error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        function generateOfficeQR() {
+            new QRious({
+                element: document.getElementById('qrCanvas'),
+                value: 'VINNAR_OFFICE_2026',
+                size: 160,
+                level: 'H'
+            });
+        }
+
+
+        let currentReportData = []; // Store globally for CSV download
+
+        async function loadReportPreview() {
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
+            const tbody = document.querySelector('#reportPreviewTable tbody');
+            const downloadBtn = document.getElementById('downloadCSVBtn');
+
+            if (!startDate || !endDate) { alert("Please select both dates."); return; }
+
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 3rem;"><i class="fas fa-spinner fa-spin"></i> Processing range data...</td></tr>';
+            downloadBtn.style.display = 'none';
+
+            try {
+                const sRes = await fetch('/api/all-students');
+                const students = await sRes.json();
+                const aRes = await fetch(`/api/attendance/range-report?startDate=${startDate}&endDate=${endDate}`);
+                const data = await aRes.json();
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 3rem;">No attendance records found for this month.</td></tr>';
+                    return;
+                }
+
+                const activeDates = [...new Set(data.map(r => r.date))].sort().reverse(); // Show latest dates first
+                tbody.innerHTML = '';
+                currentReportData = [];
+
+                activeDates.forEach(date => {
+                    students.forEach(student => {
+                        const rec = data.find(r => r.studentId?._id === student._id && r.date === date);
+                        const rowData = {
+                            date: date,
+                            name: student.fullName,
+                            username: student.username,
+                            shift: student.assignedShift || 'morning',
+                            status: rec ? 'PRESENT' : 'ABSENT',
+                            inTime: rec && rec.checkInTime ? new Date(rec.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (rec ? 'N/A' : 'ABSENT'),
+                            outTime: rec && rec.checkOutTime ? new Date(rec.checkOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (rec ? 'N/A' : 'ABSENT'),
+                            gps: rec && rec.locationVerified ? 'YES' : 'NO'
+                        };
+                        currentReportData.push(rowData);
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${date}</td>
+                            <td><div style="font-weight: 700;">${student.fullName}</div><div style="font-size: 0.7rem; color: var(--text-light);">${student.username}</div></td>
+                            <td><span style="text-transform: capitalize;">${student.assignedShift || 'morning'}</span></td>
+                            <td><span class="badge" style="background: ${rec ? '#dcfce7' : '#fee2e2'}; color: ${rec ? '#166534' : '#991b1b'}; width: 80px; text-align: center; display: inline-block;">${rowData.status}</span></td>
+                            <td style="color: ${rec ? '#059669' : '#94a3b8'}; font-weight: 600;">${rowData.inTime}</td>
+                            <td style="color: ${rec && rec.checkOutTime ? '#dc2626' : '#94a3b8'}; font-weight: 600;">${rowData.outTime}</td>
+                            <td>
+                                <div class="flex gap-10">
+                                    ${rec && rec.checkInPhoto ? `<div class="thumbnail-box"><img src="${rec.checkInPhoto}" class="thumbnail-img" onclick="openPhoto('${rec.checkInPhoto}')"><i class="fas fa-camera thumbnail-icon" style="color: var(--card-blue); font-size: 0.5rem;"></i></div>` : ''}
+                                    ${rec && rec.checkOutPhoto ? `<div class="thumbnail-box"><img src="${rec.checkOutPhoto}" class="thumbnail-img" onclick="openPhoto('${rec.checkOutPhoto}')"><i class="fas fa-camera thumbnail-icon" style="color: #dc2626; font-size: 0.5rem;"></i></div>` : ''}
+                                </div>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                });
+
+                downloadBtn.style.display = 'block';
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 3rem; color: #ef4444;">Failed to load report.</td></tr>';
+            }
+        }
+
+        async function downloadExcel() {
+            if (currentReportData.length === 0) return;
+
+            const startDate = document.getElementById('reportStartDate').value;
+            const endDate = document.getElementById('reportEndDate').value;
+
+            // Prepare data for Excel
+            const worksheetData = [
+                ["Date", "Full Name", "Login ID", "Shift", "Status", "Check-In Time", "Check-Out Time", "GPS Verified"]
+            ];
+
+            currentReportData.forEach(row => {
+                worksheetData.push([
+                    row.date,
+                    row.name,
+                    row.username,
+                    row.shift,
+                    row.status,
+                    row.inTime,
+                    row.outTime,
+                    row.gps
+                ]);
+            });
+
+            // Create workbook and worksheet
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(worksheetData);
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, "Attendance Report");
+
+            // Export to .xlsx
+            XLSX.writeFile(wb, `vinnar_report_${startDate}_to_${endDate}.xlsx`);
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModalOverlay').style.display = 'none';
+        }
+
+        function openPhoto(url) {
+            const modal = document.getElementById('viewPhotoModal');
+            const img = document.getElementById('fullPhoto');
+            img.src = url;
+            modal.style.display = 'flex';
+        }
+
+        function closePhotoModal() {
+            document.getElementById('viewPhotoModal').style.display = 'none';
+        }
+
+        async function editStudentStatus(id, name, s) {
+            document.getElementById('editStudentId').value = id;
+            document.getElementById('editFullName').value = s.fullName || name;
+            document.getElementById('editTotalFees').value = s.totalFees || 0;
+            document.getElementById('editPaidFees').value = s.paidFees || 0;
+            document.getElementById('editFeeStatus').value = s.feeStatus || 'No Dues';
+            document.getElementById('editFeeRemarks').value = s.feeRemarks || '';
+            document.getElementById('editRecordStatus').value = s.recordStatus || 'All Clear';
+            document.getElementById('editAssignedShift').value = s.assignedShift || 'morning';
+            document.getElementById('editPendingDocs').value = s.pendingDocs || '';
+            document.getElementById('editPassword').value = ''; // Reset password field
+
+            document.getElementById('editModalOverlay').style.display = 'flex';
+        }
+
+        document.getElementById('editStudentForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editStudentId').value;
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            const payload = {
+                fullName: document.getElementById('editFullName').value,
+                totalFees: Number(document.getElementById('editTotalFees').value),
+                paidFees: Number(document.getElementById('editPaidFees').value),
+                feeStatus: document.getElementById('editFeeStatus').value,
+                feeRemarks: document.getElementById('editFeeRemarks').value,
+                recordStatus: document.getElementById('editRecordStatus').value,
+                assignedShift: document.getElementById('editAssignedShift').value,
+                pendingDocs: document.getElementById('editPendingDocs').value
+            };
+
+            const newPass = document.getElementById('editPassword').value;
+            if (newPass) {
+                payload.password = newPass;
+            }
+
+            try {
+                const res = await fetch(`/api/students/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    alert('Student updated successfully!');
+                    closeEditModal();
+                    loadStudentsList();
+                    loadDashboardData();
+                } else {
+                    alert('Failed to update');
+                }
+            } catch (err) {
+                alert('Connection error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        async function deleteStudent(id, name) {
+            if (!confirm(`Are you sure you want to delete ${name}? This will also delete all their attendance records.`)) return;
+            try {
+                const res = await fetch(`/api/students/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    alert('Student deleted successfully');
+                    loadStudentsList();
+                    loadDashboardData();
+                } else {
+                    alert('Failed to delete student');
+                }
+            } catch (err) {
+                alert('Connection error');
+            }
+        }
+
+        document.getElementById('changePasswordForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const currentPass = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+            const statusDiv = document.getElementById('settingsStatus');
+            const btn = e.target.querySelector('button');
+
+            if (newPass !== confirmPass) {
+                statusDiv.innerText = 'New passwords do not match!';
+                statusDiv.style.background = '#fee2e2';
+                statusDiv.style.color = '#991b1b';
+                statusDiv.style.display = 'block';
+                return;
+            }
+
+            if (!user || !user.userId) {
+                statusDiv.innerText = 'Session expired. Please login again.';
+                statusDiv.style.background = '#fee2e2';
+                statusDiv.style.color = '#991b1b';
+                statusDiv.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating Passkey...';
+
+            try {
+                const res = await fetch('/api/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: user.userId,
+                        currentPassword: currentPass,
+                        newPassword: newPass
+                    })
+                });
+
+                const data = await res.json();
+                statusDiv.innerText = data.message;
+                statusDiv.style.display = 'block';
+
+                if (res.ok) {
+                    statusDiv.style.background = '#dcfce7';
+                    statusDiv.style.color = '#166534';
+                    e.target.reset();
+                } else {
+                    statusDiv.style.background = '#fee2e2';
+                    statusDiv.style.color = '#991b1b';
+                }
+            } catch (err) {
+                statusDiv.innerText = 'Connection error. Try again.';
+                statusDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Update Security Credentials';
+            }
+        };
+
+        generateOfficeQR();
+        loadDashboardData();
+        setInterval(() => {
+            if (document.getElementById('sectionDashboard').classList.contains('active')) {
+                loadDashboardData();
+            }
+        }, 10000);
+    </script>
+</body>
+
+</html>

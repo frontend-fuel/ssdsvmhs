@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Vinnar Institution of Fashion Design</title>
+    <!-- Use Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <link rel="stylesheet" href="student.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header" style="position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <p class="greeting-label"
+                        style="opacity: 1; font-weight: 700; margin-bottom: 5px; color: rgba(255,255,255,0.9);">Vinnar
+                        Institution of Fashion Design</p>
+                    <p class="greeting-label" style="font-size: 0.9rem; opacity: 0.8;">Hello,</p>
+                    <h1 id="studentName">Student</h1>
+                </div>
+                <button onclick="logout()"
+                    style="background: white; border: none; color: var(--primary-blue); width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 10px 15px rgba(0,0,0,0.15); flex-shrink: 0;">
+                    <i class="fas fa-power-off" style="font-size: 1.2rem;"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Float Card -->
+        <div class="status-card">
+            <div class="icon-box"><i class="fas fa-clock"></i></div>
+            <div class="details">
+                <p class="label">Today's Session</p>
+                <p class="value" id="currentDate">-</p>
+                <p class="label">Current Status</p>
+                <div class="status-indicator">
+                    <span id="statusDot" class="status-dot"></span>
+                    <span id="statusLabel">Loading Status...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GPS Quick Connect -->
+        <div class="gps-card">
+            <div class="gps-info">
+                <h4>Verified Location</h4>
+                <p id="currentCoords">Acquiring GPS...</p>
+            </div>
+            <button class="icon-box" style="border:none; cursor:pointer;" onclick="startTracking()">
+                <i class="fas fa-location-crosshairs" style="color: var(--primary-blue);"></i>
+            </button>
+        </div>
+
+        <!-- Scanner Area -->
+        <div style="padding: 0 1.5rem;">
+            <div id="reader"></div>
+            <div id="status-msg"></div>
+            <button id="captureSelfieBtn" class="btn-action btn-checkin" style="display: none; width: 100%;"
+                onclick="finalizeAttendance()">
+                <i class="fas fa-camera"></i> Take Selfie & Submit
+            </button>
+            <button id="cancelScanner" class="btn-action"
+                style="display: none; width: 100%; background: #64748b; margin-top: 10px;" onclick="stopScanner()">
+                Cancel
+            </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions" id="actionButtons">
+            <button class="btn-action btn-checkin" onclick="startScanner('checkin')">
+                <i class="fas fa-sign-in-alt"></i>
+                Check In
+            </button>
+            <button class="btn-action btn-checkout" onclick="startScanner('checkout')">
+                <i class="fas fa-sign-out-alt"></i>
+                Check Out
+            </button>
+        </div>
+
+        <!-- Detailed Financial & Record Status -->
+        <div style="padding: 0 1.5rem; margin-bottom: 1.5rem;">
+            <div class="mini-card"
+                style="text-align: left; margin-bottom: 1rem; border-left: 4px solid var(--primary-blue);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 style="margin: 0;"><i class="fas fa-wallet"></i> Financial Summary</h4>
+                    <span id="feeStatusLabel" class="badge"
+                        style="font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9;">Checking...</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <p style="font-size: 0.75rem; color: var(--text-light);">Total Fee</p>
+                        <p style="font-size: 1.1rem; font-weight: 800;" id="totalFeesVal">₹0</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.75rem; color: var(--text-light);">Paid Amount</p>
+                        <p style="font-size: 1.1rem; font-weight: 800; color: var(--success-green);" id="paidFeesVal">₹0
+                        </p>
+                    </div>
+                </div>
+                <div
+                    style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between;">
+                    <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">Balance to Pay:</span>
+                    <span style="font-size: 1rem; font-weight: 800; color: var(--danger-red);"
+                        id="balanceFeesVal">₹0</span>
+                </div>
+                <div id="feeRemarksContainer"
+                    style="display: none; margin-top: 10px; font-size: 0.75rem; color: #64748b; background: #f8fafc; padding: 8px; border-radius: 8px;">
+                    <i class="fas fa-info-circle"></i> <span id="feeRemarksVal"></span>
+                </div>
+            </div>
+
+            <div class="mini-card" style="text-align: left; border-left: 4px solid var(--success-green);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 style="margin: 0;"><i class="fas fa-file-shield"></i> Document Status</h4>
+                    <span id="recordStatusLabel" class="badge"
+                        style="font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9;">Checking...</span>
+                </div>
+                <p id="recordStatusVal"
+                    style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark); margin-bottom: 5px;">All Clear
+                </p>
+                <div id="pendingDocsContainer" style="display: none;">
+                    <div
+                        style="font-size: 0.75rem; color: #b45309; background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fef3c7;">
+                        <i class="fas fa-warning"></i> <b>Action Needed:</b> <span id="pendingDocsVal"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today Summary -->
+        <div class="history-card">
+            <h3><span>Today: <span id="summaryDate"></span></span> <i class="fas fa-chevron-right"
+                    style="font-size: 0.8rem; color: var(--text-light);"></i></h3>
+            <div id="todayActivity">
+                <div style="text-align: center; color: var(--text-light); padding: 1rem;">
+                    Syncing activity...
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; font-size: 0.75rem; color: var(--text-light);">
+            Developed by <a href="https://sswebtech.xyz" target="_blank"
+                style="color: var(--primary-blue); text-decoration: none; font-weight: 700;">SSWebTech</a>
+        </div>
+
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || user.role !== 'student') {
+            window.location.href = 'index.html';
+        }
+
+        document.getElementById('studentName').innerText = user.fullName;
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        document.getElementById('currentDate').innerText = dateStr;
+        document.getElementById('summaryDate').innerText = now.toISOString().split('T')[0];
+
+        async function fetchUserDetails() {
+            try {
+                const res = await fetch(`/api/students/${user.userId}`);
+                if (!res.ok) throw new Error("Status " + res.status);
+                const me = await res.json();
+                if (me) {
+                    // Fees Mapping
+                    document.getElementById('feeStatusLabel').innerText = me.feeStatus || 'No Dues';
+                    document.getElementById('totalFeesVal').innerText = `₹${me.totalFees || 0}`;
+                    document.getElementById('paidFeesVal').innerText = `₹${me.paidFees || 0}`;
+                    const bal = (me.totalFees || 0) - (me.paidFees || 0);
+                    document.getElementById('balanceFeesVal').innerText = `₹${bal > 0 ? bal : 0}`;
+
+                    if (me.feeRemarks) {
+                        document.getElementById('feeRemarksContainer').style.display = 'block';
+                        document.getElementById('feeRemarksVal').innerText = me.feeRemarks;
+                    }
+
+                    // Documents Mapping
+                    document.getElementById('recordStatusLabel').innerText = me.recordStatus || 'All Clear';
+                    document.getElementById('recordStatusVal').innerText = me.recordStatus || 'All Clear';
+
+                    if (me.pendingDocs && me.recordStatus !== 'All Clear') {
+                        document.getElementById('pendingDocsContainer').style.display = 'block';
+                        document.getElementById('pendingDocsVal').innerText = me.pendingDocs;
+                    }
+                }
+            } catch (err) { console.error("Fetch Error:", err); }
+        }
+
+        async function loadTodayStatus() {
+            try {
+                const todayStr = new Date().toISOString().split('T')[0];
+                const res = await fetch('/api/attendance/today');
+                const data = await res.json();
+                const myRecord = data.find(r => r.studentId?._id === user.userId);
+
+                const dot = document.getElementById('statusDot');
+                const label = document.getElementById('statusLabel');
+                const activityDiv = document.getElementById('todayActivity');
+
+                if (myRecord) {
+                    if (myRecord.checkOutTime) {
+                        dot.className = 'status-dot'; // Neutral
+                        label.innerText = 'Session Completed';
+                    } else {
+                        dot.className = 'status-dot active';
+                        label.innerText = 'Checked In';
+                    }
+
+                    const formatTime = (t) => t ? new Date(t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--';
+                    activityDiv.innerHTML = `
+                        <div class="history-item">
+                            <span>Check In</span>
+                            <span style="font-weight: 700; color: #059669;">${formatTime(myRecord.checkInTime)}</span>
+                        </div>
+                        <div class="history-item">
+                            <span>Check Out</span>
+                            <span style="font-weight: 700; ${myRecord.checkOutTime ? 'color: #dc2626;' : 'color: #94a3b8;'}">${formatTime(myRecord.checkOutTime)}</span>
+                        </div>
+                    `;
+                } else {
+                    dot.className = 'status-dot inactive';
+                    label.innerText = 'Not Checked In';
+                    activityDiv.innerHTML = '<div style="text-align: center; color: var(--text-light); padding: 1rem;">No activity recorded for today.</div>';
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        let currentLat = null, currentLng = null, html5QrCode = null, pendingType = null, pendingQrData = null, selfieStream = null;
+
+        function startScanner(type) {
+            pendingType = type;
+            document.getElementById('reader').style.display = 'block';
+            document.getElementById('actionButtons').style.display = 'none';
+            document.getElementById('cancelScanner').style.display = 'block';
+            const msgEl = document.getElementById('status-msg');
+            msgEl.innerText = "Step 1: Scan Office QR Code";
+            msgEl.style.background = "#eff6ff";
+            msgEl.style.color = "#2563eb";
+
+            html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (qr) => {
+                pendingQrData = qr;
+                prepareSelfie();
+            }, (err) => { }).catch(e => {
+                alert("Camera error: " + e);
+                stopScanner();
+            });
+        }
+
+        async function prepareSelfie() {
+            const msgEl = document.getElementById('status-msg');
+            msgEl.innerText = "Step 2: Take a Verification Selfie";
+            msgEl.style.background = "#f0fdf4";
+            msgEl.style.color = "#16a34a";
+
+            if (html5QrCode) await html5QrCode.stop().catch(() => { });
+            document.getElementById('reader').innerHTML = '<video id="selfieVideo" autoplay playsinline style="width: 100%; border-radius: 20px; transform: scaleX(-1);"></video>';
+
+            try {
+                selfieStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                document.getElementById('selfieVideo').srcObject = selfieStream;
+                document.getElementById('captureSelfieBtn').style.display = 'block';
+            } catch (e) { alert("Front camera error"); stopScanner(); }
+        }
+
+        async function finalizeAttendance() {
+            const video = document.getElementById('selfieVideo');
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            canvas.getContext("2d").drawImage(video, 0, 0);
+            const photo = canvas.toDataURL("image/jpeg", 0.6);
+
+            stopScanner();
+            markAttendance(pendingType, pendingQrData, photo);
+        }
+
+        function stopScanner() {
+            if (html5QrCode && html5QrCode.isScanning) html5QrCode.stop().catch(() => { });
+            if (selfieStream) selfieStream.getTracks().forEach(t => t.stop());
+            document.getElementById('reader').style.display = 'none';
+            document.getElementById('reader').innerHTML = '';
+            document.getElementById('actionButtons').style.display = 'grid';
+            document.getElementById('cancelScanner').style.display = 'none';
+            document.getElementById('captureSelfieBtn').style.display = 'none';
+            document.getElementById('status-msg').innerText = "";
+        }
+
+        function startTracking() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition((p) => {
+                    currentLat = p.coords.latitude;
+                    currentLng = p.coords.longitude;
+                    document.getElementById('currentCoords').innerText = `${currentLat.toFixed(5)}, ${currentLng.toFixed(5)}`;
+                }, (e) => {
+                    document.getElementById('currentCoords').innerText = "Location access denied";
+                }, { enableHighAccuracy: true });
+            }
+        }
+
+        async function markAttendance(type, qrData, photo) {
+            const msgEl = document.getElementById('status-msg');
+            msgEl.style.display = "block";
+            msgEl.innerText = "Verifying & Submitting...";
+
+            try {
+                const res = await fetch('/api/mark-attendance', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: user.userId, type, userLat: currentLat, userLng: currentLng, qrCodeData: qrData, photo })
+                });
+                const data = await res.json();
+                alert(data.message);
+                loadTodayStatus();
+            } catch (err) { alert("Submission failed"); }
+            setTimeout(() => { msgEl.innerText = ""; }, 3000);
+        }
+
+        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+        fetchUserDetails();
+        loadTodayStatus();
+        startTracking();
+    </script>
+</body>
+
+</html>
