@@ -14,4 +14,4 @@ const UserSchema = new mongoose.Schema({
     pendingDocs: { type: String, default: '' } // e.g. "Aadhar, Photo"
 });
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.models.User || mongoose.model('User', UserSchema);

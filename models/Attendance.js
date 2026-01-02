@@ -11,4 +11,4 @@ const AttendanceSchema = new mongoose.Schema({
     checkOutPhoto: { type: String }
 });
 
-module.exports = mongoose.model('Attendance', AttendanceSchema);
+module.exports = mongoose.models.Attendance || mongoose.model('Attendance', AttendanceSchema);
