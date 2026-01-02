@@ -9,12 +9,15 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const geolib = require('geolib');
 const User = require('./models/User');
-const Attendance = require('./models/Attendance');
-
+const path = require('path');
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
