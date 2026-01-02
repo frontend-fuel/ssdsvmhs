@@ -9,6 +9,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const geolib = require('geolib');
 const User = require('./models/User');
+const Attendance = require('./models/Attendance');
 const path = require('path');
 const app = express();
 app.use(express.json());
