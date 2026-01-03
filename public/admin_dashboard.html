@@ -87,7 +87,7 @@
                                 <input type="date" id="dueDate" placeholder="Due Date">
                                 <input type="number" id="paidFees" placeholder="Paid (₹)">
                             </div>
-                            <input type="text" id="feeStatus" placeholder="Summary Status (e.g. 500 Due)">
+                            <!-- feeStatus input removed -->
                             <input type="text" id="feeRemarks" placeholder="Fee Remarks (e.g. Next pay 10th)">
                             <input type="text" id="recordStatus" placeholder="Record Status (e.g. Pending)">
                             <input type="text" id="pendingDocs" placeholder="Missing Docs (e.g. Aadhar, Photo)">
@@ -142,7 +142,7 @@
                                     <th>Full Name</th>
                                     <th>Login ID</th>
                                     <th>Assigned Shift</th>
-                                    <th>Fee Status</th>
+                                    <th>Financials</th>
                                     <th>Record Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -269,10 +269,7 @@
                         <input type="number" id="editPaidFees">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Fee Status Summary</label>
-                    <input type="text" id="editFeeStatus" placeholder="e.g. 500 Due">
-                </div>
+                <!-- feeStatus input removed -->
                 <div class="form-group">
                     <label>Fee Remarks (Private)</label>
                     <input type="text" id="editFeeRemarks" placeholder="Internal notes...">
@@ -362,7 +359,7 @@
                             <td><div class="text-mono text-muted" style="text-transform: uppercase;">${student.username}</div></td>
                             <td><span class="badge badge-info">${student.assignedShift || 'morning'}</span></td>
                             <td>
-                                <div class="text-bold ${student.feeStatus === 'No Dues' ? 'text-success' : 'text-danger'}">${student.feeStatus || 'No Dues'}</div>
+                                <!-- Fee Status text removed -->
                                 <div class="text-small text-muted">Amnt: ₹${student.dueAmount || 0} | Due: ${student.dueDate || '-'}</div>
                                 ${student.feeRemarks ? `<div class="text-small text-muted" style="font-style: italic;">"${student.feeRemarks}"</div>` : ''}
                             </td>
@@ -453,7 +450,7 @@
                 username: document.getElementById('username').value,
                 password: document.getElementById('password').value,
                 assignedShift: document.getElementById('assignedShift').value,
-                feeStatus: document.getElementById('feeStatus').value || 'No Dues',
+                feeStatus: 'No Dues', // Default as field is removed
                 recordStatus: document.getElementById('recordStatus').value || 'All Clear',
                 dueDate: document.getElementById('dueDate').value || '',
                 dueAmount: Number(document.getElementById('dueAmount').value) || 0,
@@ -617,7 +614,7 @@
             document.getElementById('editDueDate').value = s.dueDate || '';
             document.getElementById('editDueAmount').value = s.dueAmount || 0;
             document.getElementById('editPaidFees').value = s.paidFees || 0;
-            document.getElementById('editFeeStatus').value = s.feeStatus || 'No Dues';
+            // feeStatus removed from UI
             document.getElementById('editFeeRemarks').value = s.feeRemarks || '';
             document.getElementById('editRecordStatus').value = s.recordStatus || 'All Clear';
             document.getElementById('editAssignedShift').value = s.assignedShift || 'morning';
@@ -640,7 +637,7 @@
                 dueDate: document.getElementById('editDueDate').value,
                 dueAmount: Number(document.getElementById('editDueAmount').value),
                 paidFees: Number(document.getElementById('editPaidFees').value),
-                feeStatus: document.getElementById('editFeeStatus').value,
+                feeStatus: 'No Dues', // Default or preserve existing if logic allows (simplified to default here)
                 feeRemarks: document.getElementById('editFeeRemarks').value,
                 recordStatus: document.getElementById('editRecordStatus').value,
                 assignedShift: document.getElementById('editAssignedShift').value,
