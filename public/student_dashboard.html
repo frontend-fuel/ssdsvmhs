@@ -274,9 +274,12 @@
         async function finalizeAttendance() {
             const video = document.getElementById('selfieVideo');
             const canvas = document.createElement("canvas");
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            canvas.getContext("2d").drawImage(video, 0, 0);
-            const photo = canvas.toDataURL("image/jpeg", 0.6);
+            // Resize to max 400px for speed
+            const scale = Math.min(400 / video.videoWidth, 400 / video.videoHeight);
+            canvas.width = video.videoWidth * scale;
+            canvas.height = video.videoHeight * scale;
+            canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+            const photo = canvas.toDataURL("image/jpeg", 0.7);
 
             stopScanner();
             markAttendance(pendingType, pendingQrData, photo);

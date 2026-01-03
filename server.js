@@ -12,7 +12,7 @@ const User = require('./models/User');
 const Attendance = require('./models/Attendance');
 const path = require('path');
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
