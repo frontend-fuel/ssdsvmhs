@@ -102,9 +102,10 @@
 
                     <div class="mgmt-card flex-center flex-column">
                         <h3><i class="fas fa-qrcode"></i> Institution Access QR</h3>
-                        <canvas id="qrCanvas"></canvas>
+                        <img src="qr-code.jpg" alt="Attendance QR Code"
+                            style="width: 160px; height: 160px; border-radius: 10px; margin-bottom: 10px;">
                         <div class="qr-code-box">
-                            Code: <b style="color: var(--card-blue);">VINNAR_INSTITUTION_2026</b>
+                            Scan to Mark Attendance
                         </div>
                     </div>
                 </div>
@@ -484,14 +485,6 @@
             window.location.href = 'index.html';
         }
 
-        function generateOfficeQR() {
-            new QRious({
-                element: document.getElementById('qrCanvas'),
-                value: 'VINNAR_INSTITUTION_2026',
-                size: 160,
-                level: 'H'
-            });
-        }
 
 
         let currentReportData = []; // Store globally for CSV download
@@ -749,7 +742,6 @@
             }
         };
 
-        generateOfficeQR();
         loadDashboardData();
         setInterval(() => {
             if (document.getElementById('sectionDashboard').classList.contains('active')) {
