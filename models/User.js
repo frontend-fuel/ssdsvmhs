@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
     fullName: { type: String, required: true },
     feeStatus: { type: String, default: 'No Dues' },
     dueDate: { type: String, default: '' }, // e.g. "2023-12-25"
+    dueAmount: { type: Number, default: 0 },
     paidFees: { type: Number, default: 0 },
     feeRemarks: { type: String, default: '' },
     recordStatus: { type: String, default: 'All Clear' },

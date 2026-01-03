@@ -116,7 +116,7 @@ app.post('/api/change-password', async (req, res) => {
 
 // Register Student (Admin)
 app.post('/api/students', async (req, res) => {
-    const { fullName, username, password, feeStatus, recordStatus, assignedShift, dueDate, paidFees, feeRemarks, pendingDocs } = req.body;
+    const { fullName, username, password, feeStatus, recordStatus, assignedShift, dueDate, dueAmount, paidFees, feeRemarks, pendingDocs } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
@@ -129,6 +129,7 @@ app.post('/api/students', async (req, res) => {
             recordStatus: recordStatus || 'All Clear',
             recordStatus: recordStatus || 'All Clear',
             dueDate: dueDate || '',
+            dueAmount: dueAmount || 0,
             paidFees: paidFees || 0,
             feeRemarks: feeRemarks || '',
             pendingDocs: pendingDocs || ''
@@ -142,13 +143,14 @@ app.post('/api/students', async (req, res) => {
 
 // Update Student Status (Admin)
 app.patch('/api/students/:id', async (req, res) => {
-    const { feeStatus, recordStatus, fullName, dueDate, paidFees, feeRemarks, pendingDocs, assignedShift, password } = req.body;
+    const { feeStatus, recordStatus, fullName, dueDate, dueAmount, paidFees, feeRemarks, pendingDocs, assignedShift, password } = req.body;
     try {
         const updateData = {};
         if (feeStatus !== undefined) updateData.feeStatus = feeStatus;
         if (recordStatus !== undefined) updateData.recordStatus = recordStatus;
         if (fullName !== undefined) updateData.fullName = fullName;
         if (dueDate !== undefined) updateData.dueDate = dueDate;
+        if (dueAmount !== undefined) updateData.dueAmount = dueAmount;
         if (paidFees !== undefined) updateData.paidFees = paidFees;
         if (feeRemarks !== undefined) updateData.feeRemarks = feeRemarks;
         if (pendingDocs !== undefined) updateData.pendingDocs = pendingDocs;

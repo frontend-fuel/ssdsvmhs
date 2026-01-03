@@ -82,9 +82,10 @@
                             <input type="text" id="fullName" placeholder="Full Student Name" required>
                             <input type="text" id="username" placeholder="Username (Login ID)" required>
                             <input type="password" id="password" placeholder="Passkey" required>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                                <input type="number" id="dueAmount" placeholder="Due Amt (₹)">
                                 <input type="date" id="dueDate" placeholder="Due Date">
-                                <input type="number" id="paidFees" placeholder="Paid Amount (₹)">
+                                <input type="number" id="paidFees" placeholder="Paid (₹)">
                             </div>
                             <input type="text" id="feeStatus" placeholder="Summary Status (e.g. 500 Due)">
                             <input type="text" id="feeRemarks" placeholder="Fee Remarks (e.g. Next pay 10th)">
@@ -254,7 +255,11 @@
                     <label>Full Name</label>
                     <input type="text" id="editFullName" required>
                 </div>
-                <div class="edit-form-grid">
+                <div class="edit-form-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                    <div class="form-group">
+                        <label>Due Amount (₹)</label>
+                        <input type="number" id="editDueAmount">
+                    </div>
                     <div class="form-group">
                         <label>Due Date</label>
                         <input type="date" id="editDueDate">
@@ -358,7 +363,7 @@
                             <td><span class="badge badge-info">${student.assignedShift || 'morning'}</span></td>
                             <td>
                                 <div class="text-bold ${student.feeStatus === 'No Dues' ? 'text-success' : 'text-danger'}">${student.feeStatus || 'No Dues'}</div>
-                                <div class="text-small text-muted">Due: ${student.dueDate || '-'} | Paid: ₹${student.paidFees || 0}</div>
+                                <div class="text-small text-muted">Amnt: ₹${student.dueAmount || 0} | Due: ${student.dueDate || '-'}</div>
                                 ${student.feeRemarks ? `<div class="text-small text-muted" style="font-style: italic;">"${student.feeRemarks}"</div>` : ''}
                             </td>
                             <td>
@@ -451,6 +456,7 @@
                 feeStatus: document.getElementById('feeStatus').value || 'No Dues',
                 recordStatus: document.getElementById('recordStatus').value || 'All Clear',
                 dueDate: document.getElementById('dueDate').value || '',
+                dueAmount: Number(document.getElementById('dueAmount').value) || 0,
                 paidFees: Number(document.getElementById('paidFees').value) || 0,
                 feeRemarks: document.getElementById('feeRemarks').value || '',
                 pendingDocs: document.getElementById('pendingDocs').value || ''
@@ -609,6 +615,7 @@
             document.getElementById('editStudentId').value = id;
             document.getElementById('editFullName').value = s.fullName || name;
             document.getElementById('editDueDate').value = s.dueDate || '';
+            document.getElementById('editDueAmount').value = s.dueAmount || 0;
             document.getElementById('editPaidFees').value = s.paidFees || 0;
             document.getElementById('editFeeStatus').value = s.feeStatus || 'No Dues';
             document.getElementById('editFeeRemarks').value = s.feeRemarks || '';
@@ -631,6 +638,7 @@
             const payload = {
                 fullName: document.getElementById('editFullName').value,
                 dueDate: document.getElementById('editDueDate').value,
+                dueAmount: Number(document.getElementById('editDueAmount').value),
                 paidFees: Number(document.getElementById('editPaidFees').value),
                 feeStatus: document.getElementById('editFeeStatus').value,
                 feeRemarks: document.getElementById('editFeeRemarks').value,

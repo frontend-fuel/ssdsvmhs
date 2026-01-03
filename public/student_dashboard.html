@@ -105,10 +105,13 @@
                     </div>
                 </div>
                 <div
-                    style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e2e8f0; display: flex; justify-content: space-between;">
-                    <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-dark);">Balance to Pay:</span>
-                    <span style="font-size: 1rem; font-weight: 800; color: var(--danger-red);"
-                        id="balanceFeesVal">₹0</span>
+                    style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e2e8f0; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <p style="font-size: 0.75rem; color: var(--text-light);">Due Amount</p>
+                        <p style="font-size: 1.1rem; font-weight: 800; color: var(--danger-red);" id="dueAmountVal">₹0
+                        </p>
+                    </div>
+                    id="balanceFeesVal">₹0</span>
                 </div>
                 <div id="feeRemarksContainer"
                     style="display: none; margin-top: 10px; font-size: 0.75rem; color: #64748b; background: #f8fafc; padding: 8px; border-radius: 8px;">
@@ -174,8 +177,7 @@
                     document.getElementById('feeStatusLabel').innerText = me.feeStatus || 'No Dues';
                     document.getElementById('dueDateVal').innerText = me.dueDate || '-';
                     document.getElementById('paidFeesVal').innerText = `₹${me.paidFees || 0}`;
-                    // Balance calculation removed as Total Fees is removed
-                    document.getElementById('balanceFeesVal').innerText = 'Ref. Office';
+                    document.getElementById('dueAmountVal').innerText = `₹${me.dueAmount || 0}`;
 
                     if (me.feeRemarks) {
                         document.getElementById('feeRemarksContainer').style.display = 'block';
