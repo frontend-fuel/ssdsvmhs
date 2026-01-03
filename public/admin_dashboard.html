@@ -194,6 +194,7 @@
                                 <tr>
                                     <th>Date</th>
                                     <th>Name</th>
+                                    <th>Batch</th>
                                     <th>Shift</th>
                                     <th>Status</th>
                                     <th>In Time</th>
@@ -558,6 +559,7 @@
                             date: date,
                             name: student.fullName,
                             username: student.username,
+                            batch: student.batch || '-',
                             shift: student.assignedShift || 'morning',
                             status: rec ? 'PRESENT' : 'ABSENT',
                             inTime: rec && rec.checkInTime ? new Date(rec.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (rec ? 'N/A' : 'ABSENT'),
@@ -570,6 +572,7 @@
                         tr.innerHTML = `
                             <td>${date}</td>
                             <td><div style="font-weight: 700;">${student.fullName}</div><div style="font-size: 0.7rem; color: var(--text-light);">${student.username}</div></td>
+                            <td><span style="text-transform: capitalize;">${student.batch || '-'}</span></td>
                             <td><span style="text-transform: capitalize;">${student.assignedShift || 'morning'}</span></td>
                             <td><span class="badge" style="background: ${rec ? '#dcfce7' : '#fee2e2'}; color: ${rec ? '#166534' : '#991b1b'}; width: 80px; text-align: center; display: inline-block;">${rowData.status}</span></td>
                             <td style="color: ${rec ? '#059669' : '#94a3b8'}; font-weight: 600;">${rowData.inTime}</td>
@@ -599,7 +602,7 @@
 
             // Prepare data for Excel
             const worksheetData = [
-                ["Date", "Full Name", "Login ID", "Shift", "Status", "Check-In Time", "Check-Out Time", "GPS Verified"]
+                ["Date", "Full Name", "Login ID", "Batch", "Shift", "Status", "Check-In Time", "Check-Out Time", "GPS Verified"]
             ];
 
             currentReportData.forEach(row => {
@@ -607,6 +610,7 @@
                     row.date,
                     row.name,
                     row.username,
+                    row.batch,
                     row.shift,
                     row.status,
                     row.inTime,
