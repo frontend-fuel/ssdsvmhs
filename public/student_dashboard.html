@@ -90,8 +90,6 @@
                 style="text-align: left; margin-bottom: 1rem; border-left: 4px solid var(--primary-blue);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <h4 style="margin: 0;"><i class="fas fa-wallet"></i> Financial Summary</h4>
-                    <span id="feeStatusLabel" class="badge"
-                        style="font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9;">Checking...</span>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div>
@@ -165,7 +163,6 @@
                 const me = await res.json();
                 if (me) {
                     // Fees Mapping
-                    document.getElementById('feeStatusLabel').innerText = me.feeStatus || 'No Dues';
                     document.getElementById('dueDateVal').innerText = me.dueDate || '-';
                     document.getElementById('dueAmountVal').innerText = `₹${me.dueAmount || 0}`;
 
