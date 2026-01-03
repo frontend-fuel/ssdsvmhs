@@ -4,7 +4,7 @@ const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['student', 'admin'], required: true, default: 'student' },
-    assignedShift: { type: String, enum: ['morning', 'afternoon'], default: 'morning' },
+    assignedShift: { type: String, enum: ['morning', 'afternoon', 'fulltime'], default: 'morning' },
     batch: { type: String, default: '' },
     fullName: { type: String, required: true },
     feeStatus: { type: String, default: 'No Dues' },
