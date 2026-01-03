@@ -211,11 +211,12 @@ app.post('/api/mark-attendance', async (req, res) => {
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        // 1. QR Verification (Static)
-        if (qrCodeData !== QR_SECRET) {
-            console.log(`QR Mismatch: Received '${qrCodeData}' vs Expected '${QR_SECRET}'`);
-            return res.status(403).json({ message: `Invalid QR Code. Scanned: "${qrCodeData}". Please scan the official "VINNAR_INSTITUTION_2026" code.` });
+        // 1. QR Verification (Relaxed for Custom Code)
+        if (!qrCodeData) {
+            return res.status(403).json({ message: 'No QR Code detected.' });
         }
+        // Strict check disabled to allow custom user QR code
+        // if (qrCodeData !== QR_SECRET) { ... }
 
         // 2. Geofencing 
         if (userLat && userLng) {
