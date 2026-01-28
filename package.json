@@ -10,12 +10,15 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "engines": {
+    "node": ">=18.x"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
-    "express": "^5.2.1",
+    "express": "^4.19.2",
     "geolib": "^3.3.4",
-    "mongoose": "^9.1.1"
+    "mongoose": "^8.0.0"
   }
 }
