@@ -13,7 +13,8 @@ const UserSchema = new mongoose.Schema({
     paidFees: { type: Number, default: 0 },
     feeRemarks: { type: String, default: '' },
     recordStatus: { type: String, default: 'All Clear' },
-    pendingDocs: { type: String, default: '' } // e.g. "Aadhar, Photo"
+    pendingDocs: { type: String, default: '' }, // e.g. "Aadhar, Photo"
+    parentPhone: { type: String, default: '' }
 });
 
 module.exports = mongoose.models.User || mongoose.model('User', UserSchema);

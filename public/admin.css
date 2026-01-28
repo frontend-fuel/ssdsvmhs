@@ -229,6 +229,12 @@ td {
     border-bottom: 1px solid var(--border);
     font-size: 0.9rem;
     color: var(--text-dark);
+    vertical-align: top;
+}
+
+/* Specific Column Widths for Exam Table */
+#examResultsTable th:nth-child(3) {
+    width: 40%;
 }
 
 .badge-verified {

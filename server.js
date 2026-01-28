@@ -10,6 +10,7 @@ const bcrypt = require('bcryptjs');
 const geolib = require('geolib');
 const User = require('./models/User');
 const Attendance = require('./models/Attendance');
+const ExamResult = require('./models/ExamResult');
 const path = require('path');
 const app = express();
 app.use(express.json({ limit: '10mb' }));
@@ -119,8 +120,9 @@ app.post('/api/change-password', async (req, res) => {
 });
 
 // Register Student (Admin)
+// Register Student (Admin)
 app.post('/api/students', async (req, res) => {
-    const { fullName, username, password, feeStatus, recordStatus, assignedShift, batch, dueDate, dueAmount, paidFees, feeRemarks, pendingDocs } = req.body;
+    const { fullName, username, password, feeStatus, recordStatus, assignedShift, batch, dueDate, dueAmount, paidFees, feeRemarks, pendingDocs, parentPhone } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
@@ -136,7 +138,8 @@ app.post('/api/students', async (req, res) => {
             dueAmount: dueAmount || 0,
             paidFees: paidFees || 0,
             feeRemarks: feeRemarks || '',
-            pendingDocs: pendingDocs || ''
+            pendingDocs: pendingDocs || '',
+            parentPhone: parentPhone || ''
         });
         await newUser.save();
         res.status(201).json({ message: 'Student registered successfully' });
@@ -147,7 +150,7 @@ app.post('/api/students', async (req, res) => {
 
 // Update Student Status (Admin)
 app.patch('/api/students/:id', async (req, res) => {
-    const { feeStatus, recordStatus, fullName, dueDate, dueAmount, paidFees, feeRemarks, pendingDocs, assignedShift, batch, password } = req.body;
+    const { feeStatus, recordStatus, fullName, dueDate, dueAmount, paidFees, feeRemarks, pendingDocs, assignedShift, batch, password, parentPhone } = req.body;
     try {
         const updateData = {};
         if (feeStatus !== undefined) updateData.feeStatus = feeStatus;
@@ -158,6 +161,7 @@ app.patch('/api/students/:id', async (req, res) => {
         if (paidFees !== undefined) updateData.paidFees = paidFees;
         if (feeRemarks !== undefined) updateData.feeRemarks = feeRemarks;
         if (pendingDocs !== undefined) updateData.pendingDocs = pendingDocs;
+        if (parentPhone !== undefined) updateData.parentPhone = parentPhone;
         if (assignedShift !== undefined) updateData.assignedShift = assignedShift;
         if (batch !== undefined) updateData.batch = batch;
 
@@ -204,9 +208,15 @@ async function uploadToImgBB(base64Image) {
         });
 
         const result = await response.json();
-        return result.success ? result.data.url : base64Image;
+        if (result.success) {
+            console.log("✅ ImgBB Upload Success:", result.data.url);
+            return result.data.url;
+        } else {
+            console.error("❌ ImgBB API Error:", result);
+            return base64Image;
+        }
     } catch (err) {
-        console.error("ImgBB Upload Failed:", err);
+        console.error("❌ ImgBB Network/Server Error:", err.message);
         return base64Image;
     }
 }
@@ -241,9 +251,11 @@ app.post('/api/mark-attendance', async (req, res) => {
         }
 
         // 3. Image Handling
-        // Optimization: Store optimized Base64 directly in DB for instant verification.
-        // ImgBB upload removed to prevent latency.
-        const imageUrl = photo;
+        let imageUrl = photo;
+        // If client already uploaded (starts with http), use it. Otherwise, Server uploads (Fallback).
+        if (!photo.startsWith('http')) {
+            imageUrl = await uploadToImgBB(photo);
+        }
 
         // 4. Time Check (Optional removed per user request)
         // Restricted shifts are now disabled. 
@@ -336,6 +348,61 @@ app.get('/api/all-students', async (req, res) => {
         res.json(students);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching students', error: error.message });
+    }
+});
+
+// Save or Update Exam Result (One per month)
+app.post('/api/exam-results', async (req, res) => {
+    const { studentId, examMonth, subjects, totalPercentage, remarks } = req.body;
+    try {
+        const result = await ExamResult.findOneAndUpdate(
+            { studentId, examMonth },
+            {
+                studentId,
+                examMonth,
+                subjects,
+                totalPercentage,
+                remarks,
+                updatedAt: new Date()
+            },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+        res.status(200).json({ message: 'Exam result saved/updated successfully', result });
+    } catch (error) {
+        res.status(500).json({ message: 'Error saving result', error: error.message });
+    }
+});
+
+// Get All Exam Results (for list view)
+app.get('/api/all-exam-results', async (req, res) => {
+    try {
+        const results = await ExamResult.find()
+            .populate('studentId', 'fullName username batch')
+            .sort({ examMonth: -1, updatedAt: -1 });
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching details', error: error.message });
+    }
+});
+
+// Get Exam Results for a Student
+app.get('/api/exam-results/:studentId', async (req, res) => {
+    try {
+        const results = await ExamResult.find({ studentId: req.params.studentId }).sort({ examMonth: -1 });
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching results', error: error.message });
+    }
+});
+
+// Delete Exam Result
+app.delete('/api/exam-results/:id', async (req, res) => {
+    try {
+        const result = await ExamResult.findByIdAndDelete(req.params.id);
+        if (!result) return res.status(404).json({ message: 'Result not found' });
+        res.json({ message: 'Exam result deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting result', error: error.message });
     }
 });
 

@@ -27,6 +27,7 @@
                     Dashboard</li>
                 <li id="menuStudents" onclick="showPage('students')"><i class="fas fa-user-graduate"></i> Students</li>
                 <li id="menuReports" onclick="showPage('reports')"><i class="fas fa-file-export"></i> Reports</li>
+                <li id="menuExams" onclick="showPage('exams')"><i class="fas fa-graduation-cap"></i> Exams</li>
                 <li id="menuSettings" onclick="showPage('settings')"><i class="fas fa-cog"></i> Settings</li>
                 <li onclick="logout()" style="margin-top: 10rem;"><i class="fas fa-sign-out-alt"></i> Logout</li>
             </ul>
@@ -91,6 +92,8 @@
                             <input type="text" id="feeRemarks" placeholder="Fee Remarks (e.g. Next pay 10th)">
                             <input type="text" id="recordStatus" placeholder="Record Status (e.g. Pending)">
                             <input type="text" id="pendingDocs" placeholder="Missing Docs (e.g. Aadhar, Photo)">
+                            <input type="text" id="parentPhone"
+                                placeholder="Parent WhatsApp Number (e.g. 919876543210)">
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                                 <input type="text" id="batch" placeholder="Batch (e.g. 2024-25)">
                                 <select id="assignedShift" required>
@@ -221,6 +224,122 @@
                 </div>
             </div>
 
+            <!-- Exams Section -->
+            <div id="sectionExams" class="page-section">
+                <div class="mgmt-card mb-15">
+                    <h3><i class="fas fa-plus-circle" style="color: var(--card-blue);"></i> Add Exam Results</h3>
+                    <form id="addExamForm">
+                        <div class="flex gap-15" style="flex-wrap: wrap; margin-bottom: 15px;">
+                            <div style="flex: 1; min-width: 200px;">
+                                <label class="form-group label">Student</label>
+                                <select id="examStudentSelect" required style="margin-bottom: 0;">
+                                    <option value="">Select Student</option>
+                                </select>
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <label class="form-group label">Exam Month</label>
+                                <input type="month" id="examMonth" required style="margin-bottom: 0;">
+                            </div>
+                        </div>
+
+                        <div id="subjectsContainer">
+                            <div class="subject-row flex gap-10" style="align-items: flex-end; margin-bottom: 10px;">
+                                <div style="flex: 2;">
+                                    <label class="form-group label">Subject</label>
+                                    <select name="subjectName" required style="margin-bottom: 0;">
+                                        <option value="" disabled selected>Select Subject</option>
+                                        <option value="Illustration">Illustration</option>
+                                        <option value="Pattern Making">Pattern Making</option>
+                                        <option value="Embroidery">Embroidery</option>
+                                        <option value="Art & Craft">Art & Craft</option>
+                                        <option value="Beautician">Beautician</option>
+                                        <option value="Communicative English">Communicative English</option>
+                                        <option value="CAD">CAD</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                </div>
+                                <div style="flex: 1;">
+                                    <label class="form-group label">Marks</label>
+                                    <input type="number" name="marksObtained" placeholder="Obtained" required
+                                        style="margin-bottom: 0;">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label class="form-group label">Total</label>
+                                    <input type="number" name="totalMarks" value="100" required
+                                        style="margin-bottom: 0;">
+                                </div>
+                                <button type="button" class="btn btn-ghost" onclick="removeSubjectRow(this)"
+                                    style="color: #ef4444; padding: 5px;"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-ghost btn-sm" onclick="addSubjectRow()"
+                            style="margin-bottom: 15px; color: var(--card-blue); padding: 0;">
+                            <i class="fas fa-plus"></i> Add Another Subject
+                        </button>
+
+                        <div class="form-group">
+                            <label class="form-group label">Remarks</label>
+                            <input type="text" id="examRemarks" placeholder="e.g. Excellent improvement in sketching!">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-full flex-center">
+                            <i class="fas fa-save" style="margin-right: 8px;"></i> Save Results
+                        </button>
+                    </form>
+                </div>
+
+                <div class="data-card">
+                    <h3><i class="fas fa-list-alt" style="color: var(--card-blue);"></i> Recent Results</h3>
+                    <div class="flex gap-15"
+                        style="margin-bottom: 20px; flex-wrap: wrap; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <div style="flex: 1; min-width: 150px;">
+                            <label class="text-small text-bold"
+                                style="color: var(--text-light); margin-bottom: 5px; display: block;">Filter by
+                                Batch</label>
+                            <select id="listBatchSelect" onchange="filterExamList()"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; outline: none;">
+                                <option value="">All Batches</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label class="text-small text-bold"
+                                style="color: var(--text-light); margin-bottom: 5px; display: block;">Filter by
+                                Student</label>
+                            <select id="listStudentSelect" onchange="filterExamList()"
+                                style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; outline: none;">
+                                <option value="">All Students</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <label class="text-small text-bold"
+                                style="color: var(--text-light); margin-bottom: 5px; display: block;">Filter by
+                                Month</label>
+                            <input type="month" id="listMonthFilter" onchange="filterExamList()"
+                                style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 8px; outline: none; margin-bottom: 0;">
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table id="examResultsTable">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Student</th>
+                                    <th>Subjects</th>
+                                    <th>Result</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 2rem;">Select a student to view
+                                        results</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
             <!-- Settings Section -->
             <div id="sectionSettings" class="page-section">
                 <div class="mgmt-card" style="max-width: 500px; margin: 0 auto;">
@@ -318,6 +437,10 @@
                     <label>Missing Documents</label>
                     <input type="text" id="editPendingDocs" placeholder="e.g. Aadhar, Passport Photo">
                 </div>
+                <div class="form-group">
+                    <label>Parent WhatsApp Number</label>
+                    <input type="text" id="editParentPhone" placeholder="e.g. 919876543210">
+                </div>
                 <button type="submit" class="btn btn-primary"
                     style="width: 100%; justify-content: center; margin-top: 1rem;">
                     <i class="fas fa-save"></i> Save Changes
@@ -338,6 +461,22 @@
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user || user.role !== 'admin') {
             window.location.href = 'index.html';
+        }
+
+        function formatPhoneNumber(phone) {
+            if (!phone) return '';
+            let cleaned = phone.replace(/\D/g, ''); // Remove non-digits
+
+            // Auto-fix 10 digit numbers
+            if (cleaned.length === 10) {
+                cleaned = '91' + cleaned;
+            }
+
+            // Validation: Must be 12 digits starting with 91 (India)
+            if (cleaned.length !== 12 || !cleaned.startsWith('91')) {
+                return null;
+            }
+            return cleaned;
         }
 
         function showPage(page) {
@@ -362,8 +501,380 @@
                 const today = new Date().toISOString().split('T')[0];
                 document.getElementById('reportStartDate').value = today;
                 document.getElementById('reportEndDate').value = today;
+            } else if (page === 'exams') {
+                document.getElementById('headerTitle').innerHTML = '<i class="fas fa-graduation-cap" style="color: var(--card-blue);"></i> Exam Results';
+                loadExamsData();
             } else if (page === 'settings') {
                 document.getElementById('headerTitle').innerHTML = '<i class="fas fa-user-lock" style="color: var(--card-blue);"></i> Account Settings';
+            }
+        }
+
+        let allExamResultsCache = [];
+
+        async function loadExamsData() {
+            try {
+                // Populate Student Dropdown (Top Form)
+                const res = await fetch('/api/all-students');
+                const students = await res.json();
+
+                const select = document.getElementById('examStudentSelect');
+                select.innerHTML = '<option value="">Select Student</option>';
+                students.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s._id;
+                    opt.innerText = `${s.fullName} (${s.username})`;
+                    select.appendChild(opt);
+                });
+
+                // Load All Results for Bottom List
+                loadAllExamResults();
+
+            } catch (err) {
+                console.error('Error loading exams data', err);
+            }
+        }
+
+        async function loadAllExamResults() {
+            try {
+                const res = await fetch('/api/all-exam-results');
+                allExamResultsCache = await res.json();
+
+                // Populate Filter Dropdowns
+                const uniqueBatches = [...new Set(allExamResultsCache.map(r => r.studentId ? r.studentId.batch : '').filter(b => b))];
+                const uniqueStudents = [...new Map(allExamResultsCache.map(r => [r.studentId?._id, r.studentId])).values()].filter(s => s && s._id);
+
+                const batchSel = document.getElementById('listBatchSelect');
+                const studentSel = document.getElementById('listStudentSelect');
+
+                // Keep selections if re-loading
+                const currBatch = batchSel.value;
+                const currStudent = studentSel.value;
+
+                batchSel.innerHTML = '<option value="">All Batches</option>';
+                uniqueBatches.forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b;
+                    opt.innerText = b;
+                    if (b === currBatch) opt.selected = true;
+                    batchSel.appendChild(opt);
+                });
+
+                studentSel.innerHTML = '<option value="">All Students</option>';
+                uniqueStudents.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s._id;
+                    opt.innerText = `${s.fullName} (${s.username})`;
+                    if (s._id === currStudent) opt.selected = true;
+                    studentSel.appendChild(opt);
+                });
+
+                filterExamList();
+
+            } catch (err) { console.error(err); }
+        }
+
+        function filterExamList() {
+            const batchFilter = document.getElementById('listBatchSelect').value;
+            const studentFilter = document.getElementById('listStudentSelect').value;
+            const monthFilter = document.getElementById('listMonthFilter').value;
+            const tbody = document.querySelector('#examResultsTable tbody');
+
+            let filtered = allExamResultsCache;
+
+            if (batchFilter) {
+                filtered = filtered.filter(r => r.studentId && r.studentId.batch === batchFilter);
+            }
+            if (studentFilter) {
+                filtered = filtered.filter(r => r.studentId && r.studentId._id === studentFilter);
+            }
+            if (monthFilter) {
+                filtered = filtered.filter(r => r.examMonth === monthFilter);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No matching results found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            filtered.forEach(r => {
+                if (!r.studentId) return; // Skip if student deleted
+                const dateObj = new Date(r.examMonth + '-01');
+                const monthStr = dateObj.toLocaleString('default', { month: 'short', year: 'numeric' });
+                const subList = r.subjects.map(s => `<div class="text-small">${s.subjectName} <span class="text-muted">(${s.marksObtained})</span></div>`).join('');
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${monthStr}</td>
+                        <td>
+                            <div class="text-bold">${r.studentId.fullName}</div>
+                            <div class="text-small text-muted">${r.studentId.batch || '-'}</div>
+                        </td>
+                        <td>${subList}</td>
+                        <td>
+                            <div class="text-bold">${r.totalPercentage.toFixed(1)}%</div>
+                            <div class="text-small text-muted">"${r.remarks}"</div>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" style="background-color: #25D366; color: white; border: none; margin-bottom: 5px; width: 100%;" 
+                                onclick='sendWhatsAppReport(${JSON.stringify(r).replace(/'/g, "&apos;")}, "${r.studentId.fullName.replace(/'/g, "&apos;")}")'>
+                                <i class="fab fa-whatsapp"></i> Send
+                            </button>
+                            <button class="btn btn-ghost btn-sm" style="color: var(--card-blue); width: 100%; border: 1px solid var(--card-blue); margin-bottom: 5px;"
+                                onclick='editExamResult(${JSON.stringify(r).replace(/'/g, "&apos;")})'>
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-ghost btn-sm" style="color: #ef4444; width: 100%; border: 1px solid #ef4444;"
+                                onclick='deleteExamResult("${r._id}")'>
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function addSubjectRow() {
+            const div = document.createElement('div');
+            div.className = 'subject-row flex gap-10';
+            div.style.alignItems = 'flex-end';
+            div.style.marginBottom = '10px';
+            div.innerHTML = `
+                <div style="flex: 2;">
+                    <select name="subjectName" required style="margin-bottom: 0;">
+                        <option value="" disabled selected>Select Subject</option>
+                        <option value="Illustration">Illustration</option>
+                        <option value="Pattern Making">Pattern Making</option>
+                        <option value="Embroidery">Embroidery</option>
+                        <option value="Art & Craft">Art & Craft</option>
+                        <option value="Beautician">Beautician</option>
+                        <option value="Communicative English">Communicative English</option>
+                        <option value="CAD">CAD</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <input type="number" name="marksObtained" placeholder="Obtained" required style="margin-bottom: 0;">
+                </div>
+                <div style="flex: 1;">
+                    <input type="number" name="totalMarks" value="100" required style="margin-bottom: 0;">
+                </div>
+                <button type="button" class="btn btn-ghost" onclick="removeSubjectRow(this)" style="color: #ef4444; padding: 5px;"><i class="fas fa-trash"></i></button>
+            `;
+            document.getElementById('subjectsContainer').appendChild(div);
+        }
+
+        function removeSubjectRow(btn) {
+            if (document.querySelectorAll('.subject-row').length > 1) {
+                btn.parentElement.remove();
+            } else {
+                alert("At least one subject is required.");
+            }
+        }
+
+        document.getElementById('addExamForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            try {
+                const subjects = [];
+                let totalObtained = 0;
+                let maxMarks = 0;
+
+                document.querySelectorAll('.subject-row').forEach(row => {
+                    const name = row.querySelector('select[name="subjectName"]').value;
+                    const obt = Number(row.querySelector('input[name="marksObtained"]').value);
+                    const tot = Number(row.querySelector('input[name="totalMarks"]').value);
+                    subjects.push({ subjectName: name, marksObtained: obt, totalMarks: tot });
+                    totalObtained += obt;
+                    maxMarks += tot;
+                });
+
+                const percentage = (totalObtained / maxMarks) * 100;
+
+                const payload = {
+                    studentId: document.getElementById('examStudentSelect').value,
+                    examMonth: document.getElementById('examMonth').value,
+                    subjects: subjects,
+                    totalPercentage: percentage,
+                    remarks: document.getElementById('examRemarks').value
+                };
+
+                const res = await fetch('/api/exam-results', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    alert('Exam result saved/updated!');
+                    document.getElementById('addExamForm').reset();
+                    // Reset subjects container to default single row
+                    document.getElementById('subjectsContainer').innerHTML = '';
+                    addSubjectRow();
+                    // Trigger change event to reload table
+                    document.getElementById('examStudentSelect').dispatchEvent(new Event('change'));
+
+                    // Reset Title
+                    document.querySelector('#sectionExams h3').innerHTML = '<i class="fas fa-plus-circle" style="color: var(--card-blue);"></i> Add Exam Results';
+
+                } else {
+                    alert('Error saving result');
+                }
+            } catch (err) { console.error(err); alert('Error saving'); }
+            finally {
+                btn.innerHTML = '<i class="fas fa-save" style="margin-right: 8px;"></i> Save Results';
+                btn.disabled = false;
+            }
+        };
+
+        function editExamResult(r) {
+            // 1. Set Month
+            document.getElementById('examMonth').value = r.examMonth;
+
+            // 2. Set Remarks
+            document.getElementById('examRemarks').value = r.remarks;
+
+            // 3. Clear and Rebuild Subjects
+            const container = document.getElementById('subjectsContainer');
+            container.innerHTML = '';
+
+            r.subjects.forEach(sub => {
+                const div = document.createElement('div');
+                div.className = 'subject-row flex gap-10';
+                div.style.alignItems = 'flex-end';
+                div.style.marginBottom = '10px';
+                div.innerHTML = `
+                    <div style="flex: 2;">
+                        <select name="subjectName" required style="margin-bottom: 0;">
+                            <option value="" disabled>Select Subject</option>
+                            <option value="Illustration" ${sub.subjectName === 'Illustration' ? 'selected' : ''}>Illustration</option>
+                            <option value="Pattern Making" ${sub.subjectName === 'Pattern Making' ? 'selected' : ''}>Pattern Making</option>
+                            <option value="Embroidery" ${sub.subjectName === 'Embroidery' ? 'selected' : ''}>Embroidery</option>
+                            <option value="Art & Craft" ${sub.subjectName === 'Art & Craft' ? 'selected' : ''}>Art & Craft</option>
+                            <option value="Beautician" ${sub.subjectName === 'Beautician' ? 'selected' : ''}>Beautician</option>
+                            <option value="Communicative English" ${sub.subjectName === 'Communicative English' ? 'selected' : ''}>Communicative English</option>
+                            <option value="CAD" ${sub.subjectName === 'CAD' ? 'selected' : ''}>CAD</option>
+                            <option value="Others" ${sub.subjectName === 'Others' ? 'selected' : ''}>Others</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <input type="number" name="marksObtained" value="${sub.marksObtained}" placeholder="Obtained" required style="margin-bottom: 0;">
+                    </div>
+                    <div style="flex: 1;">
+                        <input type="number" name="totalMarks" value="${sub.totalMarks}" required style="margin-bottom: 0;">
+                    </div>
+                    <button type="button" class="btn btn-ghost" onclick="removeSubjectRow(this)" style="color: #ef4444; padding: 5px;"><i class="fas fa-trash"></i></button>
+                 `;
+                container.appendChild(div);
+            });
+
+            // If "Others" or different subjects were used that are not in list, handle gracefully (optional, but above assumes standard list)
+
+            // Scroll to top
+            document.querySelector('.mgmt-panel').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('examMonth').focus();
+
+            // Change Title to indicate Edit mode
+            document.querySelector('#sectionExams h3').innerHTML = '<i class="fas fa-edit" style="color: var(--card-blue);"></i> Edit Exam Results';
+
+            alert("Loaded result for editing. Make changes and click 'Save Results' to update.");
+        }
+
+        async function deleteExamResult(id) {
+            if (!confirm("Are you sure you want to delete this exam result? This cannot be undone.")) return;
+            try {
+                const res = await fetch(`/api/exam-results/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    alert('Exam result deleted successfully.');
+                    // Refresh List
+                    document.getElementById('examStudentSelect').dispatchEvent(new Event('change'));
+
+                    // Reset Form if it was in edit mode for this item (optional, but good practice)
+                    document.getElementById('addExamForm').reset();
+                    document.querySelector('#sectionExams h3').innerHTML = '<i class="fas fa-plus-circle" style="color: var(--card-blue);"></i> Add Exam Results';
+                    document.getElementById('subjectsContainer').innerHTML = '';
+                    addSubjectRow();
+
+                } else {
+                    alert('Error deleting result.');
+                }
+            } catch (err) { console.error(err); alert('Connection error'); }
+        }
+
+
+
+        async function sendWhatsAppReport(result, studentName) {
+            try {
+                // Get student details to find parent phone
+                const studentId = result.studentId._id || result.studentId;
+                const sRes = await fetch(`/api/students/${studentId}`);
+                const student = await sRes.json();
+
+                if (!student.parentPhone) {
+                    alert("Parent phone number not found for this student. Please update student details.");
+                    return;
+                }
+
+                // Get Attendance Data
+                const [year, month] = result.examMonth.split('-');
+                const startDate = `${year}-${month}-01`;
+                const lastDay = new Date(year, month, 0).getDate();
+                const endDate = `${year}-${month}-${lastDay}`;
+
+                const attRes = await fetch(`/api/attendance/range-report?startDate=${startDate}&endDate=${endDate}&studentId=${result.studentId._id || result.studentId}`);
+                const attendanceRecords = await attRes.json();
+
+                const presentDays = attendanceRecords.filter(a => a.checkInTime).length;
+
+                // Estimate working days (Total Days - Sundays)
+                let totalDaysInMonth = new Date(year, month, 0).getDate();
+                let sundays = 0;
+                for (let d = 1; d <= totalDaysInMonth; d++) {
+                    const date = new Date(year, month - 1, d);
+                    if (date.getDay() === 0) sundays++;
+                }
+                const estimatedWorkingDays = totalDaysInMonth - sundays;
+                const attendancePercent = estimatedWorkingDays > 0 ? ((presentDays / estimatedWorkingDays) * 100).toFixed(1) : 0;
+
+                const monthFormatted = new Date(year, month - 1).toLocaleString('default', { month: 'long', year: 'numeric' });
+
+                let msg = `Vinnar Institution of Fashion Design\nMonthly Progress Report\n\n`;
+                msg += `Student: ${studentName}\n`;
+                msg += `Month: ${monthFormatted}\n\n`;
+
+                msg += `Performance:\n`;
+                result.subjects.forEach(sub => {
+                    msg += `• ${sub.subjectName}: ${sub.marksObtained}/${sub.totalMarks}\n`;
+                });
+                msg += `\nTotal Percentage: ${result.totalPercentage.toFixed(1)}%\n`;
+
+                msg += `\nAttendance (Monthly):\n`;
+                msg += `• Days Present: ${presentDays}\n`;
+                msg += `• Approx. Attendance: ${attendancePercent}%\n`;
+
+                if (student.dueAmount > 0) {
+                    msg += `\nFees Details:\n`;
+                    msg += `• Due Amount: ₹${student.dueAmount}\n`;
+                    if (student.dueDate) {
+                        const dDate = new Date(student.dueDate).toLocaleDateString('en-GB');
+                        msg += `• Due Date: ${dDate}\n`;
+                    }
+                } else {
+                    msg += `\nFees: Paid\n`;
+                }
+
+                msg += `\nRemarks: ${result.remarks}\n\n`;
+                msg += `This is an automated report from Vinnar Portal.`;
+
+                const url = `https://wa.me/${student.parentPhone}?text=${encodeURIComponent(msg)}`;
+                window.open(url, '_blank');
+
+            } catch (err) {
+                console.error(err);
+                alert("Error generating WhatsApp link.");
             }
         }
 
@@ -491,6 +1002,20 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
             btn.disabled = true;
 
+            // Validate Phone
+            let phoneInput = document.getElementById('parentPhone').value;
+            let finalPhone = '';
+            if (phoneInput) {
+                finalPhone = formatPhoneNumber(phoneInput);
+                if (!finalPhone) {
+                    alert("Invalid WhatsApp Number.\nPlease enter 10 digits (e.g., 9876543210). Prefix +91 is added automatically.");
+                    const btn = e.target.querySelector('button'); // Re-select btn just in case, though safe to use from closure
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    return;
+                }
+            }
+
             const payload = {
                 fullName: document.getElementById('fullName').value,
                 username: document.getElementById('username').value,
@@ -503,7 +1028,8 @@
                 dueAmount: Number(document.getElementById('dueAmount').value) || 0,
                 paidFees: Number(document.getElementById('paidFees').value) || 0,
                 feeRemarks: document.getElementById('feeRemarks').value || '',
-                pendingDocs: document.getElementById('pendingDocs').value || ''
+                pendingDocs: document.getElementById('pendingDocs').value || '',
+                parentPhone: finalPhone
             };
 
             try {
@@ -684,6 +1210,7 @@
             document.getElementById('editAssignedShift').value = s.assignedShift || 'morning';
             document.getElementById('editBatch').value = s.batch || '';
             document.getElementById('editPendingDocs').value = s.pendingDocs || '';
+            document.getElementById('editParentPhone').value = s.parentPhone || '';
             document.getElementById('editPassword').value = ''; // Reset password field
 
             document.getElementById('editModalOverlay').style.display = 'flex';
@@ -697,6 +1224,20 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             btn.disabled = true;
 
+            // Validate Phone
+            let phoneInput = document.getElementById('editParentPhone').value;
+            let finalPhone = '';
+            if (phoneInput) {
+                finalPhone = formatPhoneNumber(phoneInput);
+                if (!finalPhone) {
+                    alert("Invalid WhatsApp Number.\nPlease enter 10 digits (e.g., 9876543210). Prefix +91 is added automatically.");
+                    const btn = e.target.querySelector('button');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    return;
+                }
+            }
+
             const payload = {
                 fullName: document.getElementById('editFullName').value,
                 dueDate: document.getElementById('editDueDate').value,
@@ -707,7 +1248,8 @@
                 recordStatus: document.getElementById('editRecordStatus').value,
                 assignedShift: document.getElementById('editAssignedShift').value,
                 batch: document.getElementById('editBatch').value,
-                pendingDocs: document.getElementById('editPendingDocs').value
+                pendingDocs: document.getElementById('editPendingDocs').value,
+                parentPhone: finalPhone
             };
 
             const newPass = document.getElementById('editPassword').value;
