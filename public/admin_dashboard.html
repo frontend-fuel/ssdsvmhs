@@ -260,8 +260,15 @@
                                 </div>
                                 <div style="flex: 1;">
                                     <label class="form-group label">Marks</label>
-                                    <input type="number" name="marksObtained" placeholder="Obtained" required
-                                        style="margin-bottom: 0;">
+                                    <div class="flex" style="align-items: center; gap: 5px;">
+                                        <input type="text" name="marksObtained" placeholder="Obtained" required
+                                            style="margin-bottom: 0; min-width: 60px;">
+                                        <label
+                                            style="font-size: 0.8rem; display: flex; align-items: center; cursor: pointer;">
+                                            <input type="checkbox" onchange="toggleAbsent(this)"
+                                                style="margin-right: 4px;"> AB
+                                        </label>
+                                    </div>
                                 </div>
                                 <div style="flex: 1;">
                                     <label class="form-group label">Total</label>
@@ -654,7 +661,12 @@
                     </select>
                 </div>
                 <div style="flex: 1;">
-                    <input type="number" name="marksObtained" placeholder="Obtained" required style="margin-bottom: 0;">
+                    <div class="flex" style="align-items: center; gap: 5px;">
+                        <input type="text" name="marksObtained" placeholder="Obtained" required style="margin-bottom: 0; min-width: 60px;">
+                        <label style="font-size: 0.8rem; display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" onchange="toggleAbsent(this)" style="margin-right: 4px;"> AB
+                        </label>
+                    </div>
                 </div>
                 <div style="flex: 1;">
                     <input type="number" name="totalMarks" value="100" required style="margin-bottom: 0;">
@@ -662,6 +674,20 @@
                 <button type="button" class="btn btn-ghost" onclick="removeSubjectRow(this)" style="color: #ef4444; padding: 5px;"><i class="fas fa-trash"></i></button>
             `;
             document.getElementById('subjectsContainer').appendChild(div);
+        }
+
+        function toggleAbsent(checkbox) {
+            const row = checkbox.closest('.flex');
+            const input = row.querySelector('input[name="marksObtained"]');
+            if (checkbox.checked) {
+                input.value = "AB";
+                input.readOnly = true;
+                input.style.backgroundColor = "#eee";
+            } else {
+                input.value = "";
+                input.readOnly = false;
+                input.style.backgroundColor = "white";
+            }
         }
 
         function removeSubjectRow(btn) {
@@ -685,10 +711,12 @@
 
                 document.querySelectorAll('.subject-row').forEach(row => {
                     const name = row.querySelector('select[name="subjectName"]').value;
-                    const obt = Number(row.querySelector('input[name="marksObtained"]').value);
+                    const val = row.querySelector('input[name="marksObtained"]').value;
                     const tot = Number(row.querySelector('input[name="totalMarks"]').value);
-                    subjects.push({ subjectName: name, marksObtained: obt, totalMarks: tot });
-                    totalObtained += obt;
+
+                    const obtForCalc = (val === 'AB') ? 0 : Number(val);
+                    subjects.push({ subjectName: name, marksObtained: val, totalMarks: tot });
+                    totalObtained += obtForCalc;
                     maxMarks += tot;
                 });
 
@@ -742,10 +770,12 @@
             container.innerHTML = '';
 
             r.subjects.forEach(sub => {
+                const isAbsent = sub.marksObtained === 'AB';
                 const div = document.createElement('div');
                 div.className = 'subject-row flex gap-10';
                 div.style.alignItems = 'flex-end';
                 div.style.marginBottom = '10px';
+
                 div.innerHTML = `
                     <div style="flex: 2;">
                         <select name="subjectName" required style="margin-bottom: 0;">
@@ -761,7 +791,13 @@
                         </select>
                     </div>
                     <div style="flex: 1;">
-                        <input type="number" name="marksObtained" value="${sub.marksObtained}" placeholder="Obtained" required style="margin-bottom: 0;">
+                        <div class="flex" style="align-items: center; gap: 5px;">
+                            <input type="text" name="marksObtained" value="${sub.marksObtained}" placeholder="Obtained" required 
+                                style="margin-bottom: 0; min-width: 60px; ${isAbsent ? 'background-color: #eee;' : ''}" ${isAbsent ? 'readonly' : ''}>
+                            <label style="font-size: 0.8rem; display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" onchange="toggleAbsent(this)" style="margin-right: 4px;" ${isAbsent ? 'checked' : ''}> AB
+                            </label>
+                        </div>
                     </div>
                     <div style="flex: 1;">
                         <input type="number" name="totalMarks" value="${sub.totalMarks}" required style="margin-bottom: 0;">
@@ -847,7 +883,8 @@
 
                 msg += `Performance:\n`;
                 result.subjects.forEach(sub => {
-                    msg += `• ${sub.subjectName}: ${sub.marksObtained}/${sub.totalMarks}\n`;
+                    const marksDisplay = sub.marksObtained === 'AB' ? 'Absent' : `${sub.marksObtained}/${sub.totalMarks}`;
+                    msg += `• ${sub.subjectName}: ${marksDisplay}\n`;
                 });
                 msg += `\nTotal Percentage: ${result.totalPercentage.toFixed(1)}%\n`;
 

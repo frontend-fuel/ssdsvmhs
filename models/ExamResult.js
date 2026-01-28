@@ -6,7 +6,7 @@ const ExamResultSchema = new mongoose.Schema({
     subjects: [
         {
             subjectName: { type: String, required: true },
-            marksObtained: { type: Number, required: true },
+            marksObtained: { type: String, required: true },
             totalMarks: { type: Number, required: true }
         }
     ],
