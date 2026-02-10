@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSDSVMHS | System Gateway</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --accent: #059669;
+            --bg-light: #ffffff;
+            --bg-secondary: #f8fafc;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow: rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Decorative Background Elements */
+        .bg-decoration {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-decoration::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .bg-decoration::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(5, 150, 105, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        /* TOP CENTER LOGO SECTION */
+        .brand-center-top {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            margin-bottom: 30px;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            background: white;
+            padding: 15px 35px;
+            border-radius: 18px;
+            box-shadow: 0 10px 40px var(--shadow);
+        }
+
+        .logo-main {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            /* Removed filter for better clarity */
+        }
+
+        .logo-main:hover {
+            transform: scale(1.1);
+        }
+
+        .brand-divider {
+            height: 50px;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--border), transparent);
+        }
+
+        .brand-subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 800;
+        }
+
+        .main-content .brand-center-top {
+            margin-bottom: 0;
+        }
+
+        /* SCREEN 2: LOADER STYLES */
+        #loader-wrapper {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        #loader-wrapper.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .progress-box {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 80px;
+            background: white;
+            border-radius: 50%;
+            padding: 20px;
+            box-shadow: 0 20px 60px var(--shadow);
+        }
+
+        .progress-svg {
+            width: 160px;
+            height: 160px;
+            transform: rotate(-90deg);
+        }
+
+        .progress-bg {
+            fill: none;
+            stroke: var(--border);
+            stroke-width: 6;
+        }
+
+        .progress-bar {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 6;
+            stroke-dasharray: 502;
+            stroke-dashoffset: 502;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.1s linear;
+            filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.3));
+        }
+
+        #countdown {
+            position: absolute;
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-shadow: 0 2px 10px rgba(37, 99, 235, 0.2);
+        }
+
+        #status-msg {
+            margin-top: 40px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        /* SCREEN 3: REVEALED CONTENT */
+        .main-content {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 1s ease;
+            z-index: 100;
+            gap: 30px;
+            width: 95%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        body.loaded #loader-wrapper {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.05);
+            transition: all 0.5s ease;
+        }
+
+        body.loaded .main-content {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        /* SCREEN 1: START BUTTON */
+        #start-screen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            z-index: 2000;
+            transition: opacity 0.5s ease;
+        }
+
+        #start-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .btn-start {
+            background: white;
+            color: var(--primary);
+            padding: 20px 50px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-start:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 50px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-launch {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--primary);
+            color: white;
+            padding: 24px 70px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-launch:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-launch i {
+            transition: transform 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-launch:hover i {
+            transform: translateX(5px);
+        }
+
+        .hero-text {
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent);
+            font-weight: 800;
+            letter-spacing: 3px;
+            font-size: 0.75rem;
+            margin-bottom: 18px;
+            padding: 8px 20px;
+            background: rgba(5, 150, 105, 0.1);
+            border-radius: 50px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+
+        .hero-text h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .hero-text p {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-size: 0.9rem;
+            max-width: 400px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+                justify-content: center;
+                gap: 30px;
+                max-width: 500px;
+            }
+
+            .brand-center-top {
+                top: 20px;
+                margin-bottom: 0;
+            }
+
+            .logo-group {
+                padding: 15px 25px;
+                gap: 20px;
+            }
+
+            .logo-main {
+                width: 60px;
+                height: 60px;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .btn-launch {
+                padding: 20px 50px;
+                font-size: 1.1rem;
+            }
+
+            .hero-text {
+                padding: 35px 30px;
+                align-items: center;
+                text-align: center;
+            }
+
+            .main-content {
+                gap: 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-text h1 {
+                font-size: 1.6rem;
+            }
+
+            .hero-text p {
+                font-size: 0.95rem;
+            }
+
+            .btn-launch {
+                padding: 18px 40px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-decoration"></div>
+
+    <div id="start-screen">
+        <div class="brand-center-top">
+            <div class="logo-group">
+                <img src="logo.png" class="logo-main" alt="School">
+                <div class="brand-divider"></div>
+                <img src="logo100.png" class="logo-main" alt="SSWebTech">
+            </div>
+            <span class="brand-subtitle">Partnership for Excellence</span>
+        </div>
+
+        <button class="btn-start" onclick="startSystem()">
+            <i class="fas fa-power-off"></i> LAUNCH
+        </button>
+        <p style="margin-top: 20px; color: var(--text-secondary); font-size: 0.9rem; letter-spacing: 1px;">developed by
+            <span style="color: var(--primary);">sswebtech.xyz</span>
+        </p>
+    </div>
+
+    <div id="loader-wrapper">
+        <div class="progress-box">
+            <svg class="progress-svg">
+                <circle class="progress-bg" cx="80" cy="80" r="75"></circle>
+                <circle id="bar" class="progress-bar" cx="80" cy="80" r="75"></circle>
+            </svg>
+            <div id="countdown">10</div>
+        </div>
+        <p id="status-msg">Synchronizing Database...</p>
+    </div>
+
+    <main class="main-content">
+        <div class="brand-center-top">
+            <div class="logo-group">
+                <img src="logo.png" class="logo-main" alt="School">
+                <div class="brand-divider"></div>
+                <img src="logo100.png" class="logo-main" alt="SSWebTech">
+            </div>
+            <span class="brand-subtitle">Partnership for Excellence</span>
+        </div>
+
+        <div class="hero-text">
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                SYSTEM ONLINE
+            </div>
+
+            <h1>Portal Ready</h1>
+
+            <p>Welcome to <strong>Sri Sadguru Darbar Sai Vidya Mandiram High School</strong> Digital Campus. <br>
+                Empowering our faculty with next-generation tools for seamless attendance tracking and real-time
+                academic management.</p>
+
+            <a href="index.html" class="btn-launch" style="margin-top: 10px; margin-bottom: 0;">
+                Access Dashboard <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+    </main>
+
+    <script>
+        const bar = document.getElementById('bar');
+        const count = document.getElementById('countdown');
+        const status = document.getElementById('status-msg');
+        const circ = 2 * Math.PI * 75;
+
+        bar.style.strokeDasharray = circ;
+
+        let progress = 0;
+        const totalTime = 10000;
+        const step = 50;
+
+        const messages = [
+            "Authenticating SSL...",
+            "Loading Faculty Profiles...",
+            "Checking Geofence Status...",
+            "System Integrity: 100%"
+        ];
+
+        const timer = null;
+
+        function startSystem() {
+            // 0. Launch Confetti
+            var duration = 10 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 15,
+                    angle: 60,
+                    spread: 80,
+                    skew: 1,
+                    origin: { x: 0 },
+                    colors: ['#2563eb', '#059669', '#ffffff', '#fbbf24']
+                });
+                confetti({
+                    particleCount: 15,
+                    angle: 120,
+                    spread: 80,
+                    skew: 1,
+                    origin: { x: 1 },
+                    colors: ['#2563eb', '#059669', '#ffffff', '#fbbf24']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            // 1. Hide Start Screen
+            document.getElementById('start-screen').classList.add('hidden');
+
+            // 2. Show Loader
+            document.getElementById('loader-wrapper').classList.add('active');
+
+            // 3. Start Timer
+            const timer = setInterval(() => {
+                progress += step;
+                const percent = progress / totalTime;
+                const remaining = Math.ceil((totalTime - progress) / 1000);
+
+                bar.style.strokeDashoffset = circ - (percent * circ);
+                count.innerText = remaining > 0 ? remaining : "✓";
+
+                if (percent > 0.1) status.innerText = messages[0];
+                if (percent > 0.4) status.innerText = messages[1];
+                if (percent > 0.7) status.innerText = messages[2];
+                if (percent > 0.9) status.innerText = messages[3];
+
+                if (progress >= totalTime) {
+                    clearInterval(timer);
+                    setTimeout(() => document.body.classList.add('loaded'), 500);
+                }
+            }, step);
+        }
+    </script>
+</body>
+
+</html>

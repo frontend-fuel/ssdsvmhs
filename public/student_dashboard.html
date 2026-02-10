@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Vinnar Institution of Fashion Design</title>
+    <title>Dashboard - Sri Sadguru Darbar Sai Vidya Mandiram High School</title>
     <link rel="icon" href="tab-icon.jpeg" type="image/jpeg">
     <!-- Use Google Fonts (Inter) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,10 +21,10 @@
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div>
                     <p class="greeting-label"
-                        style="opacity: 1; font-weight: 700; margin-bottom: 5px; color: rgba(255,255,255,0.9);">Vinnar
-                        Institution of Fashion Design</p>
-                    <p class="greeting-label" style="font-size: 0.9rem; opacity: 0.8;">Hello,</p>
-                    <h1 id="studentName">Student</h1>
+                        style="opacity: 1; font-weight: 700; margin-bottom: 5px; color: rgba(255,255,255,0.9);">Sri
+                        Sadguru Darbar Sai Vidya Mandiram High School</p>
+                    <p class="greeting-label" style="font-size: 0.9rem; opacity: 0.8;">Welcome,</p>
+                    <h1 id="studentName">Faculty Member</h1>
                 </div>
                 <button onclick="logout()"
                     style="background: white; border: none; color: var(--primary-blue); width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 10px 15px rgba(0,0,0,0.15); flex-shrink: 0;">
@@ -84,57 +84,7 @@
             </button>
         </div>
 
-        <!-- Detailed Financial & Record Status -->
-        <div style="padding: 0 1.5rem; margin-bottom: 1.5rem;">
-            <div class="mini-card"
-                style="text-align: left; margin-bottom: 1rem; border-left: 4px solid var(--primary-blue);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h4 style="margin: 0;"><i class="fas fa-wallet"></i> Financial Summary</h4>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div>
-                        <p style="font-size: 0.75rem; color: var(--text-light);">Due Date</p>
-                        <p style="font-size: 1.1rem; font-weight: 800;" id="dueDateVal">-</p>
-                    </div>
-                    <div>
-                        <p style="font-size: 0.75rem; color: var(--text-light);">Due Amount</p>
-                        <p style="font-size: 1.1rem; font-weight: 800; color: var(--danger-red);" id="dueAmountVal">₹0
-                        </p>
-                    </div>
-                </div>
-                <div id="feeRemarksContainer"
-                    style="display: none; margin-top: 10px; font-size: 0.75rem; color: #64748b; background: #f8fafc; padding: 8px; border-radius: 8px;">
-                    <i class="fas fa-info-circle"></i> <span id="feeRemarksVal"></span>
-                </div>
-            </div>
-
-            <div class="mini-card" style="text-align: left; border-left: 4px solid var(--success-green);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h4 style="margin: 0;"><i class="fas fa-file-shield"></i> Document Status</h4>
-                    <span id="recordStatusLabel" class="badge"
-                        style="font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9;">Checking...</span>
-                </div>
-                <p id="recordStatusVal"
-                    style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark); margin-bottom: 5px;">All Clear
-                </p>
-                <div id="pendingDocsContainer" style="display: none;">
-                    <div
-                        style="font-size: 0.75rem; color: #b45309; background: #fffbeb; padding: 8px; border-radius: 8px; border: 1px solid #fef3c7;">
-                        <i class="fas fa-warning"></i> <b>Action Needed:</b> <span id="pendingDocsVal"></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Exam Results Section -->
-            <div class="mini-card" style="text-align: left; border-left: 4px solid #8b5cf6; margin-top: 1rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h4 style="margin: 0;"><i class="fas fa-graduation-cap"></i> Recent Exam Results</h4>
-                </div>
-                <div id="examResultsContainer">
-                    <p style="font-size: 0.85rem; color: var(--text-light);">Loading results...</p>
-                </div>
-            </div>
-        </div>
+        <!-- Document Status Removed -->
 
         <!-- Today Summary -->
         <div class="history-card">
@@ -171,73 +121,10 @@
                 const res = await fetch(`/api/students/${user.userId}`);
                 if (!res.ok) throw new Error("Status " + res.status);
                 const me = await res.json();
-                if (me) {
-                    // Fees Mapping
-                    document.getElementById('dueDateVal').innerText = me.dueDate ? me.dueDate.split('-').reverse().join('-') : '-';
-                    document.getElementById('dueAmountVal').innerText = `₹${me.dueAmount || 0}`;
-
-                    if (me.feeRemarks) {
-                        document.getElementById('feeRemarksContainer').style.display = 'block';
-                        document.getElementById('feeRemarksVal').innerText = me.feeRemarks;
-                    }
-
-                    // Documents Mapping
-                    document.getElementById('recordStatusLabel').innerText = me.recordStatus || 'All Clear';
-                    document.getElementById('recordStatusVal').innerText = me.recordStatus || 'All Clear';
-
-                    if (me.pendingDocs && me.recordStatus !== 'All Clear') {
-                        document.getElementById('pendingDocsContainer').style.display = 'block';
-                        document.getElementById('pendingDocsVal').innerText = me.pendingDocs;
-                    }
-                }
             } catch (err) { console.error("Fetch Error:", err); }
         }
 
-        async function loadExamResults() {
-            try {
-                const res = await fetch(`/api/exam-results/${user.userId}`);
-                const results = await res.json();
-                const container = document.getElementById('examResultsContainer');
 
-                if (results.length === 0) {
-                    container.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-light);">No results found.</p>';
-                    return;
-                }
-
-                const latest = results[0]; // Assuming sorted by date desc on server
-                const dateObj = new Date(latest.examMonth + '-01');
-                const monthStr = dateObj.toLocaleString('default', { month: 'long', year: 'numeric' });
-
-                let html = `
-                    <div style="margin-bottom: 8px;">
-                        <span class="badge" style="background: #e0e7ff; color: #4338ca; font-weight: 600; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">${monthStr}</span>
-                        <span class="badge" style="background: #dcfce7; color: #166534; font-weight: 600; float: right; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">${latest.totalPercentage.toFixed(1)}%</span>
-                    </div>
-                    <div style="font-size: 0.8rem; border-top: 1px solid #f1f5f9; padding-top: 8px; margin-top: 8px;">
-                `;
-
-                latest.subjects.forEach(sub => {
-                    html += `
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                            <span style="color: var(--text-dark);">${sub.subjectName}</span>
-                            <span style="font-weight: 600; color: #334155;">${sub.marksObtained}/${sub.totalMarks}</span>
-                        </div>
-                    `;
-                });
-
-                html += `</div>`;
-
-                if (latest.remarks) {
-                    html += `<div style="font-size: 0.75rem; color: #64748b; background: #f8fafc; padding: 6px; border-radius: 4px; margin-top: 10px; font-style: italic;">"${latest.remarks}"</div>`;
-                }
-
-                container.innerHTML = html;
-
-            } catch (err) {
-                console.error("Error loading exams", err);
-                document.getElementById('examResultsContainer').innerHTML = '<p style="font-size: 0.85rem; color: var(--danger-red);">Failed to load results.</p>';
-            }
-        }
 
         async function loadTodayStatus() {
             try {
@@ -406,7 +293,7 @@
 
         fetchUserDetails();
         loadTodayStatus();
-        loadExamResults();
+
         startTracking();
     </script>
 </body>

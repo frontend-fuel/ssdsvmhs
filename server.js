@@ -10,7 +10,7 @@ const bcrypt = require('bcryptjs');
 const geolib = require('geolib');
 const User = require('./models/User');
 const Attendance = require('./models/Attendance');
-const ExamResult = require('./models/ExamResult');
+
 const path = require('path');
 const app = express();
 app.use(express.json({ limit: '10mb' }));
@@ -68,7 +68,7 @@ app.use(async (req, res, next) => {
 });
 
 // Attendance Constants
-const OFFICE_LOCATION = { latitude: 13.618500, longitude: 79.410528 };
+const OFFICE_LOCATION = { latitude: 13.27458, longitude: 79.12096 };
 const RADIUS_METERS = 500;
 const QR_SECRET = "VINNAR_INSTITUTION_2026";
 
@@ -351,60 +351,7 @@ app.get('/api/all-students', async (req, res) => {
     }
 });
 
-// Save or Update Exam Result (One per month)
-app.post('/api/exam-results', async (req, res) => {
-    const { studentId, examMonth, subjects, totalPercentage, remarks } = req.body;
-    try {
-        const result = await ExamResult.findOneAndUpdate(
-            { studentId, examMonth },
-            {
-                studentId,
-                examMonth,
-                subjects,
-                totalPercentage,
-                remarks,
-                updatedAt: new Date()
-            },
-            { upsert: true, new: true, setDefaultsOnInsert: true }
-        );
-        res.status(200).json({ message: 'Exam result saved/updated successfully', result });
-    } catch (error) {
-        res.status(500).json({ message: 'Error saving result', error: error.message });
-    }
-});
 
-// Get All Exam Results (for list view)
-app.get('/api/all-exam-results', async (req, res) => {
-    try {
-        const results = await ExamResult.find()
-            .populate('studentId', 'fullName username batch')
-            .sort({ examMonth: -1, updatedAt: -1 });
-        res.json(results);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching details', error: error.message });
-    }
-});
-
-// Get Exam Results for a Student
-app.get('/api/exam-results/:studentId', async (req, res) => {
-    try {
-        const results = await ExamResult.find({ studentId: req.params.studentId }).sort({ examMonth: -1 });
-        res.json(results);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching results', error: error.message });
-    }
-});
-
-// Delete Exam Result
-app.delete('/api/exam-results/:id', async (req, res) => {
-    try {
-        const result = await ExamResult.findByIdAndDelete(req.params.id);
-        if (!result) return res.status(404).json({ message: 'Result not found' });
-        res.json({ message: 'Exam result deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error deleting result', error: error.message });
-    }
-});
 
 // Get Single Student details
 app.get('/api/students/:id', async (req, res) => {
