@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSDSVMHS | 23rd School Day Celebrations</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+    <!-- html2canvas for poster download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #1e40af;
+            --accent: #b91c1c;
+            --gold: #d4af37;
+            --gold-light: #f5e3a0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --bg-canvas: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0f172a;
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        /* Decorative background symbols */
+        .bg-symbol {
+            position: fixed;
+            font-size: 15rem;
+            color: rgba(255, 255, 255, 0.03);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Main Poster Container */
+        #poster-download-area {
+            position: relative;
+            z-index: 10;
+            width: 800px;
+            /* Strong 4:5 Base */
+            height: 1000px;
+            /* 4:5 Aspect Ratio */
+            background: white;
+            border-radius: 0;
+            box-shadow: 0 0 80px rgba(212, 175, 55, 0.3);
+            text-align: center;
+            overflow: hidden;
+            border: 15px solid var(--gold);
+            display: flex;
+            flex-direction: column;
+            animation: containerGlow 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes containerGlow {
+            from {
+                box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
+            }
+
+            to {
+                box-shadow: 0 0 100px rgba(212, 175, 55, 0.4);
+            }
+        }
+
+        /* Gold Gradient Border Effect */
+        .poster-frame {
+            border: 2px solid var(--gold-light);
+            margin: 5px;
+            height: calc(100% - 10px);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .header-banner {
+            width: 100%;
+            height: 160px;
+            /* Reduced further to ensure fit */
+            overflow: hidden;
+            position: relative;
+            border-bottom: 6px solid var(--gold);
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .header-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(1.1) contrast(1.1);
+            /* Slight pop */
+        }
+
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 40%),
+                linear-gradient(to bottom, rgba(212, 175, 55, 0.1), transparent);
+        }
+
+        .content-area {
+            padding: 15px 50px;
+            /* Tighter padding */
+            background: radial-gradient(circle at center, #ffffff 0%, #f8fafc 100%);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 10px;
+        }
+
+        .logo-main {
+            height: 80px;
+            /* Scaled down further */
+            width: auto;
+            max-width: 250px;
+            object-fit: contain;
+        }
+
+        .divider {
+            height: 60px;
+            width: 2px;
+            background: var(--gold);
+        }
+
+        .event-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 6px 25px;
+            border-radius: 5px;
+            font-weight: 800;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            box-shadow: 0 0 20px rgba(185, 28, 28, 0.4);
+            text-transform: uppercase;
+            border: 2px solid var(--gold);
+            animation: badgePulse 2s infinite ease-in-out;
+        }
+
+        @keyframes badgePulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 15px rgba(185, 28, 28, 0.4);
+            }
+
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 0 25px rgba(185, 28, 28, 0.6);
+            }
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            /* Scaled down for 4:5 fit */
+            font-weight: 800;
+            margin-bottom: 3px;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .invitation-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        .guests-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 10px 0;
+        }
+
+        .guest-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            /* Tightened */
+            background: white;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid var(--gold);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .asp-photo-container {
+            width: 125px;
+            /* Scaled down */
+            height: 125px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 4px solid var(--gold);
+            margin-bottom: 5px;
+        }
+
+        .asp-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .guest-info {
+            width: 100%;
+        }
+
+        .role-title {
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+            font-weight: 800;
+            display: block;
+        }
+
+        .guest-name {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2px;
+            line-height: 1.2;
+            min-height: 2.4em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .guest-designation {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 700;
+            display: block;
+            margin-bottom: 6px;
+            line-height: 1.2;
+        }
+
+        .unified-launch {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 6px 30px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            margin: 8px auto;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 4px solid #1e3a8a;
+            box-shadow: 0 10px 20px rgba(30, 64, 175, 0.2);
+        }
+
+        /* Event Details Row */
+        .details-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #f1f5f9;
+        }
+
+        .detail-item {
+            text-align: center;
+        }
+
+        .detail-item i {
+            display: block;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 3px;
+        }
+
+        .detail-item span {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .detail-item strong {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 800;
+        }
+
+        .footer-logo {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Control Buttons (Outside Download Area) */
+        .controls {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .btn {
+            padding: 18px 45px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-download {
+            background: var(--gold);
+            color: #000;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-5px);
+            background: var(--gold-light);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-launch {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-launch:hover {
+            transform: translateY(-5px);
+            background: #f1f5f9;
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 30px 20px;
+            }
+
+            .guest-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 25px;
+            }
+
+            .asp-photo-container {
+                width: 200px;
+                height: 200px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .guest-name {
+                font-size: 1.8rem;
+            }
+
+            .details-row {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .controls {
+                flex-direction: column;
+                width: 100%;
+                align-items: stretch;
+            }
+
+            .header-banner {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <i class="fas fa-graduation-cap bg-symbol" style="top: 10%; left: 5%;"></i>
+    <i class="fas fa-star bg-symbol" style="bottom: 10%; right: 5%;"></i>
+
+    <div id="poster-download-area">
+        <div class="poster-frame">
+            <div class="header-banner">
+                <img src="poster.jpeg" alt="School Celebration">
+                <div class="banner-overlay"></div>
+            </div>
+
+            <div class="content-area">
+                <div class="logo-section">
+                    <img src="logo.png" class="logo-main" alt="School" crossorigin="anonymous" height="105">
+                    <div class="divider"></div>
+                    <img src="logo100.png" class="logo-main" alt="SSWebTech" crossorigin="anonymous" height="105"
+                        style="width: 240px;">
+                </div>
+
+                <div class="event-badge">23<sup style="text-transform: lowercase;">rd</sup> School Day Celebrations
+                </div>
+
+                <h1>Sri Sadguru Darbar Sai Vidya Mandiram High School</h1>
+
+                <p class="invitation-text">Cordially invites you to the grand inauguration of</p>
+
+                <div class="guests-grid">
+                    <!-- Guest 1 -->
+                    <div class="guest-card">
+                        <div class="asp-photo-container">
+                            <img src="asp.png" class="asp-photo" alt="Chief Guest" crossorigin="anonymous">
+                        </div>
+                        <div class="guest-info">
+                            <span class="role-title">Chief Guest of Honor</span>
+                            <h2 class="guest-name">S.R. RAJASHEKAR RAJU GARU</h2>
+                            <span class="guest-designation">ASP, Chittoor District, ANDHRA PRADESH.</span>
+                        </div>
+                    </div>
+
+                    <!-- Guest 2 -->
+                    <div class="guest-card">
+                        <div class="asp-photo-container"
+                            style="background: #ffffff; display: flex; align-items: center; justify-content: center;">
+                            <img src="mits.png" class="asp-photo" alt="Special Guest" crossorigin="anonymous"
+                                style="object-fit: contain; width: 85%; height: 85%;">
+                        </div>
+                        <div class="guest-info">
+                            <span class="role-title">Chief Guest of Honor</span>
+                            <h2 class="guest-name">Dr K CHOKKANATHAN GARU</h2>
+                            <span class="guest-designation">Associate Professor, Dept of AI,<br>MITS DEEMED TO BE
+                                UNIVERSITY, MADANAPALLE, AP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="unified-launch">
+                    Launching Smart Attendance
+                </div>
+            </div>
+
+            <div class="details-row">
+                <div class="detail-item">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>Date</span>
+                    <strong>14th Feb 2026</strong>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Time</span>
+                    <strong>11:00 AM Onwards</strong>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Venue</span>
+                    <strong>SSDSVMHS, Neelakanta Rao Peta, Ramapuram</strong>
+                </div>
+            </div>
+
+            <div class="footer-logo">
+                Presented with Excellence by <strong>SS WEB TECH</strong>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-download" onclick="downloadPoster()">
+            <i class="fas fa-download"></i> Download Poster
+        </button>
+        <a href="launch.html" class="btn btn-launch">
+            <i class="fas fa-external-link-alt"></i> Proceed to Launch
+        </a>
+    </div>
+
+    <script>
+        async function downloadPoster() {
+            const poster = document.getElementById('poster-download-area');
+            const btn = document.querySelector('.btn-download');
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing HD...';
+            btn.disabled = true;
+
+            // Pre-load all images to avoid missing elements in canvas
+            const images = poster.getElementsByTagName('img');
+            const loadPromises = Array.from(images).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
+            });
+
+            await Promise.all(loadPromises);
+
+            // Short delay to ensure browser paints everything properly
+            setTimeout(() => {
+                html2canvas(poster, {
+                    scale: 4,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false,
+                    backgroundColor: "#ffffff",
+                    scrollX: 0,
+                    scrollY: -window.scrollY // Fixes potential alignment issues
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'SSDSVMHS_School_Day_Poster_4K.png';
+                    link.href = canvas.toDataURL('image/png', 1.0);
+                    link.click();
+
+                    btn.innerHTML = '<i class="fas fa-download"></i> Download Poster';
+                    btn.disabled = false;
+                });
+            }, 500);
+        }
+    </script>
+</body>
+
+</html>

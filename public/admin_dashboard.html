@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sri Sadguru Darbar Sai Vidya Mandiram High School</title>
-    <link rel="icon" href="tab-icon.jpeg" type="image/jpeg">
+    <link rel="icon" href="logo.png" type="image/png">
     <!-- Use Google Fonts (Inter) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
@@ -97,7 +97,7 @@
 
                     <div class="mgmt-card flex-center flex-column">
                         <h3><i class="fas fa-qrcode"></i> Institution Access QR</h3>
-                        <img src="qr-att.png" alt="Attendance QR Code"
+                        <img src="att-qr.png" alt="Attendance QR Code"
                             style="width: 160px; height: 160px; border-radius: 10px; margin-bottom: 10px;">
                         <div class="qr-code-box">
                             Scan to Mark Attendance
@@ -481,12 +481,12 @@
                 password: document.getElementById('password').value,
                 assignedShift: 'fulltime',
                 batch: document.getElementById('batch').value || '',
-                feeStatus: 'No Dues', // Default as field is removed
+                feeStatus: 'No Dues',
                 recordStatus: 'Active',
-                dueDate: document.getElementById('dueDate').value || '',
-                dueAmount: Number(document.getElementById('dueAmount').value) || 0,
-                paidFees: Number(document.getElementById('paidFees').value) || 0,
-                feeRemarks: document.getElementById('feeRemarks').value || '',
+                dueDate: '',
+                dueAmount: 0,
+                paidFees: 0,
+                feeRemarks: '',
                 pendingDocs: 'None',
                 parentPhone: finalPhone
             };
